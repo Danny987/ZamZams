@@ -22,47 +22,77 @@ public class LightSource {
   private Area generateShadows(int cx, int cy, double intensity) {
     List<Integer> shadowsX = new ArrayList<>();
     List<Integer> shadowsY = new ArrayList<>();
-    
+
     for (Shape s : shapes) {
       int x = s.getBounds().x;
       int y = s.getBounds().y;
-      
-      // Left of light source
+
+      // LEft of light source
       if(cx > x + 25){
-        
+
         // Above 
         if(cy > y + 25){
           shadowsX.add(x);
           shadowsX.add(x);
           shadowsX.add(x + 50);
+
+          shadowsY.add(y + 50);
+          shadowsY.add(y);
+          shadowsY.add(y);
         }
-        
+
         // Left
         else if(cy == y+25){
-          
+
         }
-        
+
         // below
         else if(cy < y + 25){
-          
+          shadowsX.add(x + 50);
+          shadowsX.add(x);
+          shadowsX.add(x);
+
+          shadowsY.add(y);
+          shadowsY.add(y);
+          shadowsY.add(y + 50); 
         }
       }
-      
+
       // Right of light source
       else if(cx < x + 25){
-     // Above 
+        // Above 
         if(cy > y + 25){
-          
+          shadowsX.add(x);
+          shadowsX.add(x + 50);
+          shadowsX.add(x + 50);
+
+          shadowsY.add(y);
+          shadowsY.add(y);
+          shadowsY.add(y + 50); 
         }
-        
+
         // Right
         else if(cy == y+25){
-          
+          shadowsX.add(x);
+          shadowsX.add(x + 50);
+          shadowsX.add(x + 50);
+          shadowsX.add(x);
+
+          shadowsY.add(y);
+          shadowsY.add(y);
+          shadowsY.add(y + 50);
+          shadowsY.add(y + 50);
         }
-        
+
         // below
         else if(cy < y + 25){
-          
+          shadowsX.add(x + 50);
+          shadowsX.add(x + 50);
+          shadowsX.add(x);
+
+          shadowsY.add(y);
+          shadowsY.add(y + 50);
+          shadowsY.add(y + 50);
         }
       }
     }
