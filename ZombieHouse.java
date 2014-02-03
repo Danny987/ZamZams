@@ -13,6 +13,10 @@
  * ZombieHouse's main class.
  * 
  * @author Ramon A. Lovato
+ * @group Danny Gomez
+ * @group James Green
+ * @group Marcos Lemus
+ * @group Mario LoPrinzi
  * @version 0.1
  */
 public class ZombieHouse {

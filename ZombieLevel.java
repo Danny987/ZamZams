@@ -1,6 +1,6 @@
 /**
  * ZombieHouse - a zombie survival game written in Java for CS 351.
- *  
+ * 
  * Team members:
  * Ramon A. Lovato
  * Danny Gomez
@@ -9,23 +9,109 @@
  * Mario LoPrinzi
  */
 
+import java.awt.Dimension;
+import java.awt.Point;
+import java.util.ArrayList;
+
 /**
  * ZombieLevel - a wrapper class to encapsulate all data for a single level.
  * 
  * @author Ramon A. Lovato
+ * @group Danny Gomez
+ * @group James Green
+ * @group Marcos Lemus
+ * @group Mario LoPrinzi
  */
 public class ZombieLevel {
-    final int[][] original;
-    int[][] layout;
+    /*
+     * S - small object
+     * M - medium object
+     * L - large object
+     * P - player
+     * Z - zombie
+     * F - firetrap
+     * W - outer wall
+     * I - inner wall
+     * E - exit
+     * . - floor tile
+     * 
+     * B - blackened floor tile (not included in XML - only caused by fire
+     *     traps).
+     */
+    private final Point player;
+    private final ArrayList<Zombie> zombies;
+    private final char[][] original;
+    private char[][] layout;
     
     /**
      * ZombieLevel's constructor.
      * 
-     * @param layout 2-D int array representing the level's floor layout.
+     * @param layout 2-D char array representing the level's floor layout.
+     * @throws NoPlayerStartException Missing player start location.
      */
-    public ZombieLevel(int[][] layout) {
+    public ZombieLevel(char[][] layout) throws NoPlayerStartException {
+        // Before storing the original level, we need to go through and grab
+        // the player and zombie locations and remove them from the array.
+        try {
+            player = setPlayer();
+        } catch (NoPlayerStartException ex) {
+            throw ex;
+        }
+        zombies = setZombies();
         // On instantiation, layout is set to the original level layout.
         this.layout = original = layout;
+    }
+    
+    /**
+     * Finds the player start location in the array and returns it, changing
+     * the tile at that location to a basic floor tile.
+     * 
+     * @throws NoPlayerStartException Missing player start location.
+     * @return Point containing the player start position (in tiles).
+     */
+    private Point setPlayer() throws NoPlayerStartException {
+        Point player = null;
+        // Searches the array until it finds the player start location.
+        for (int x = 0; x < getSize().width && player == null; x++) {
+            for (int y = 0; y < getSize().height && player == null; y++) {
+                if (layout[x][y] == 'P') {
+                    // Once it finds the player, it needs to remove the player
+                    // marker from the array and replace it with a normal
+                    // floor tile.
+                    layout[x][y] = '.';
+                    player = new Point(x, y);
+                }
+            }
+        }
+        // If it didn't find the start location, then the level is invalid.
+        if (player == null) {
+            throw new NoPlayerStartException();
+        }
+        return player;
+    }
+    
+    /**
+     * Finds the zombie start locations, generates new zombies from them, and
+     * places them into a collection.
+     * 
+     * @return ArrayList<Zombie> containing the zombies.
+     */
+    private ArrayList<Zombie> setZombies() {
+        ArrayList<Zombie> zombies = new ArrayList<Zombie>();
+        // Searches the array for the zombie start locations and uses them to
+        // create new zombies. Since the extremes of the array are always
+        // exterior walls or the exit, we can start at 1 instead of 0 and end
+        // at width/length - 1, slightly reducing the search area.
+        for (int x = 1; x < getSize().width - 1; x++) {
+            for (int y = 1; y < getSize().height - 1; y++) {
+                if (layout[x][y] == 'Z') {
+                    // TODO: Update this once you get the real zombie class.
+                    zombies.add(new Zombie());
+                }
+            }
+        }
+        
+        return zombies;
     }
     
     /**
@@ -33,26 +119,17 @@ public class ZombieLevel {
      * 
      * @param x X-coordinate of tile to modify.
      * @param y Y-coordinate of tile to modify.
-     * @param val New int value to set for tile.
+     * @param val New char value to set for tile.
      * @return true if change succeeded; false otherwise.
      */
-    public boolean change(int x, int y, int val) {
+    public boolean change(int x, int y, char val) {
         // Exterior walls cannot be modified.
-        
-        // TODO Implement.
-        
-        return false;
-    }
-    
-    /**
-     * Getter for individual tiles.
-     * 
-     * @param x X-coordinate of tile to get.
-     * @param y Y-coordinate of tile to get
-     * @return State of tile at requested location.
-     */
-    public int getTile(int x, int y) {
-        return layout[x][y];
+        if (layout[x][y] != 'W' && layout[x][y] != 'E') {
+            layout[x][y] = val;
+            return true;
+        } else {
+            return false;
+        }
     }
     
     /**
@@ -64,22 +141,49 @@ public class ZombieLevel {
     }
     
     /**
+     * Getter for the player start location.
+     * 
+     * @return player Point containing the player start location.
+     */
+    public Point getPlayer() {
+        return player;
+    }
+    
+    /**
+     * Getter for the list of zombies.
+     * 
+     * @return zombies ArrayList<Zombie> containing the zombies.
+     */
+    public ArrayList<Zombie> getZombies() {
+        return zombies;
+    }
+    
+    /**
+     * Getter for individual tiles.
+     * 
+     * @param x X-coordinate of tile to get.
+     * @param y Y-coordinate of tile to get
+     * @return State of tile at requested location as char.
+     */
+    public char getTile(int x, int y) {
+        return layout[x][y];
+    }
+    
+    /**
+     * Getter for size of the level in tiles.
+     * 
+     * @return Tile size of level as Dimension.
+     */
+    public Dimension getSize() {
+        return new Dimension(layout.length, layout[0].length);
+    }
+    
+    /**
      * Getter for layout.
      * 
      * @return layout 2-D int array representing the level's floor layout.
      */
-    public int[][] getLayout() {
+    public char[][] getLayout() {
         return layout;
     }
-    
-    /**
-     * ZombieLevel's main method - primarily for testing.
-     * 
-     * @param args String array of command-line arguments.
-     */
-    public static void main(String[] args) {
-        // TODO Auto-generated method stub
-
-    }
-
 }

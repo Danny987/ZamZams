@@ -16,6 +16,10 @@ import java.awt.event.KeyEvent;
  * ZombieKeyboard - a keyboard listener for ZombieHouse.
  * 
  * @author Ramon A. Lovato
+ * @group Danny Gomez
+ * @group James Green
+ * @group Marcos Lemus
+ * @group Mario LoPrinzi
  */
 public class ZombieKeyboard extends KeyAdapter {
     private static final boolean PRESSED = true;

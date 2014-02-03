@@ -16,6 +16,10 @@ import javax.swing.Timer;
  * ZombieMainGame - controls ZombieHouse's main game loop and timing.
  * 
  * @author Ramon A. Lovato
+ * @group Danny Gomez
+ * @group James Green
+ * @group Marcos Lemus
+ * @group Mario LoPrinzi
  */
 public class ZombieMainGame {
     // Main game timer.

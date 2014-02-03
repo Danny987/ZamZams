@@ -1,6 +1,6 @@
 /**
  * ZombieHouse - a zombie survival game written in Java for CS 351.
- *  
+ * 
  * Team members:
  * Ramon A. Lovato
  * Danny Gomez
@@ -16,6 +16,10 @@ import javax.swing.*;
  * ZombieFrame - ZombieHouse's GUI class.
  * 
  * @author Ramon A. Lovato
+ * @group Danny Gomez
+ * @group James Green
+ * @group Marcos Lemus
+ * @group Mario LoPrinzi
  */
 public class ZombieFrame extends JFrame {
 	/**
