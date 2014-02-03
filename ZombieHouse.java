@@ -43,7 +43,8 @@ public class ZombieHouse {
         // Schedule GUI creation on the event-dispatch thread.
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                ZombieFrame newFrame = new ZombieFrame();
+                // TODO: remove ZombieTitle and make MainGame handle it.
+                ZombieFrame newFrame = new ZombieFrame(new ZombieTitle());
                 // Store a reference for later.
                 window = newFrame;
             }

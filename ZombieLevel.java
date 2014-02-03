@@ -39,7 +39,7 @@ public class ZombieLevel {
      *     traps).
      */
     private final Point player;
-    private final ArrayList<Zombie> zombies;
+    private final ArrayList<ZombiePlaceholder> zombies;
     private final char[][] original;
     private char[][] layout;
     
@@ -96,8 +96,8 @@ public class ZombieLevel {
      * 
      * @return ArrayList<Zombie> containing the zombies.
      */
-    private ArrayList<Zombie> setZombies() {
-        ArrayList<Zombie> zombies = new ArrayList<Zombie>();
+    private ArrayList<ZombiePlaceholder> setZombies() {
+        ArrayList<ZombiePlaceholder> zombies = new ArrayList<ZombiePlaceholder>();
         // Searches the array for the zombie start locations and uses them to
         // create new zombies. Since the extremes of the array are always
         // exterior walls or the exit, we can start at 1 instead of 0 and end
@@ -106,7 +106,7 @@ public class ZombieLevel {
             for (int y = 1; y < getSize().height - 1; y++) {
                 if (layout[x][y] == 'Z') {
                     // TODO: Update this once you get the real zombie class.
-                    zombies.add(new Zombie());
+                    zombies.add(new ZombiePlaceholder());
                 }
             }
         }
@@ -154,7 +154,7 @@ public class ZombieLevel {
      * 
      * @return zombies ArrayList<Zombie> containing the zombies.
      */
-    public ArrayList<Zombie> getZombies() {
+    public ArrayList<ZombiePlaceholder> getZombies() {
         return zombies;
     }
     

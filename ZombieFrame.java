@@ -28,6 +28,7 @@ public class ZombieFrame extends JFrame {
 	private static final long serialVersionUID = 1L;
 	
 	private Dimension size;
+	private ZombieKeyboard keyboard = new ZombieKeyboard();
 	
 	/**
 	 * ZombieFrame's constructor.
@@ -43,11 +44,12 @@ public class ZombieFrame extends JFrame {
 		requestFocusInWindow();
 		requestFocus();
 		
-		addKeyListener(new ZombieKeyboard());
+		addKeyListener(keyboard);
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setUndecorated(true);
         setResizable(false);
+        setBackground(Color.BLACK);
         
         // The content pane. Since the content pane is an optional parameter of
         // the constructor, it creates an empty pane with a black background if
@@ -94,6 +96,15 @@ public class ZombieFrame extends JFrame {
 	 */
 	public Dimension getSize() {
 	    return size;
+	}
+	
+	/**
+	 * Getter for keyboard.
+	 * 
+	 * @return keyboard ZombieKeyboard object containing the keyboard listener.
+	 */
+	public ZombieKeyboard getKeyboard() {
+	    return keyboard;
 	}
 	
 }
