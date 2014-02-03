@@ -1,0 +1,21 @@
+<levels>
+  <house width="100" length="40" exit="east"> 
+    <wall x="1" y1="1" y2="5"/>
+    <wall y1="7" y2="9" x="2"/>
+    <wall y="4" x1="0" x2="1"/>
+  
+    <obj x1="6" x2="6" y1="6" y2="6"/>
+    <obj x1="7" y1="2" x2="8" y2="3"/>
+  
+    <player sight="5" hear="20" speed="1" stamina="15" regen=".1"/>
+  
+    <zombie x="3" y="4" smell="8" speed="0.3" randomwalk="0%:0%"/>
+    <zombie x="3" y="5" smell="28" speed="0.1" randomwalk="90%:5%"/>
+    <zombie x="8" y="5" smell="10" speed="0.2" randomwalk="100%:25%"/>
+  
+    <wall x="2" y1="7" y2="9"/>
+  
+    <obj x1="6" x2="6" y1="6" y2="6"/>
+  
+    <zombie x="2" y="7" smell="15" speed="1" linewalk="98%:90%"/>
+</levels>
