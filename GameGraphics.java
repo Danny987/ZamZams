@@ -146,9 +146,9 @@ public class GameGraphics extends JPanel {
 
   public boolean drawImage(GameImage image, Animation animation, Direction direction, Point point, LightSource light) {
     // charactersGraphics.drawImage(null, point.x, point.y, null);
-    charactersGraphics.setColor(Color.RED);
-    charactersGraphics.fillRect(point.x, point.y, 50, 50);
+    // charactersGraphics.fillRect(point.x, point.y, 10, 10);
     light.update(point.x, point.y, lightsGraphics);
+    repaint();
     return false;
   }
 
@@ -163,6 +163,7 @@ public class GameGraphics extends JPanel {
   public void paint(Graphics g) {
     g.drawImage(background, 0, 0, null);
     g.drawImage(characters, 0, 0, null);
+    g.drawImage(lights, 0, 0, null);
   }
 
   public static void main(String arg[]) {
