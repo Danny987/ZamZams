@@ -1,9 +1,10 @@
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.event.*;
+
 import javax.swing.JFrame;
 
-public class GraphicsTestFrame extends JFrame implements MouseMotionListener{
+public class GraphicsTestFrame extends JFrame implements MouseMotionListener, KeyListener{
   private GameGraphics game;
 
   private LightSource light;
@@ -29,6 +30,7 @@ public class GraphicsTestFrame extends JFrame implements MouseMotionListener{
     game.drawImage(null, null, null, new Point(250, 250), light);
     this.add(game);
     this.addMouseMotionListener(this);
+    this.addKeyListener(this);
     setDefaultCloseOperation(EXIT_ON_CLOSE);
     setVisible(true);
 
@@ -49,5 +51,26 @@ public class GraphicsTestFrame extends JFrame implements MouseMotionListener{
   
   public static void main(String arg[]) {
     new GraphicsTestFrame();
+  }
+
+
+  @Override
+  public void keyPressed(KeyEvent arg0) {
+    // TODO Auto-generated method stub
+    
+  }
+
+
+  @Override
+  public void keyReleased(KeyEvent arg0) {
+    // TODO Auto-generated method stub
+    
+  }
+
+
+  @Override
+  public void keyTyped(KeyEvent arg0) {
+    System.out.println(arg0.getKeyChar());
+    
   }
 }
