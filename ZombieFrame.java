@@ -29,8 +29,7 @@ public class ZombieFrame extends JFrame {
 	
 	private Dimension size;
 	private Container pane;
-	private ZombieKeyStates keys = new ZombieKeyStates();
-	private ZombieKeyboard keyboard = new ZombieKeyboard(keys);
+	private ZombieKeyboard keyboard = new ZombieKeyboard();
 	
 	/**
 	 * ZombieFrame's constructor.
@@ -107,14 +106,5 @@ public class ZombieFrame extends JFrame {
 	public ZombieKeyboard getKeyboard() {
 	    return keyboard;
 	}
-	
-	/**
-     * Getter for keys.
-     * 
-     * @return keys ZombieKeyStates object containing the keyboard states.
-     */
-    public ZombieKeyStates getKeyStates() {
-        return keys;
-    }
 	
 }

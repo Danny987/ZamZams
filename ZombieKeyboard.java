@@ -16,24 +16,30 @@ import java.awt.event.KeyEvent;
  * ZombieKeyboard - a keyboard listener for ZombieHouse.
  * 
  * @author Ramon A. Lovato
- * @grokeys.up Danny Gomez
- * @grokeys.up James Green
- * @grokeys.up Marcos Lemus
- * @grokeys.up Mario LoPrinzi
+ * @group Danny Gomez
+ * @group James Green
+ * @group Marcos Lemus
+ * @group Mario LoPrinzi
  */
 public class ZombieKeyboard extends KeyAdapter {
     private static final boolean PRESSED = true;
     private static final boolean RELEASED = false;
-    
-    private ZombieKeyStates keys;
+
+    // Key states variables use wrappers so they can be passed by reference.
+    private Boolean up;
+    private Boolean down;
+    private Boolean left;
+    private Boolean right;
+    private Boolean run;
+    private Boolean action;
+    private Boolean esc;
+    private Boolean accept;
     
     /**
-     * ZombieKeyboard default constructor.
-     * 
-     * @param keys ZombieKeyStates object whose key variables should be updated.
+     * ZombieKeyboard's default constructor.
      */
-    public ZombieKeyboard(ZombieKeyStates keys) {
-        this.keys = keys;
+    public ZombieKeyboard() {
+        up = down = left = right = run = action = esc = accept = false;
     }
     
     /**
@@ -43,6 +49,7 @@ public class ZombieKeyboard extends KeyAdapter {
      */
     @Override
     public void keyPressed(KeyEvent e) {
+        System.out.println("pressed");
         keyHandler(e, PRESSED);
     }
     
@@ -66,61 +73,61 @@ public class ZombieKeyboard extends KeyAdapter {
         // button(s) were pressed/released. If a direction was pressed, sets the
         // opposite direction to RELEASED. Verified with asserts.
         switch(keyCode) {
-            // keys.up arrow/W - move keys.up.
+            // up arrow/W - move up.
             case KeyEvent.VK_UP: case KeyEvent.VK_W:
-                setState(keys.up, state);
+                setState(up, state);
                 if (state) {
-                    keys.up = RELEASED;
-                    assert (keys.up == PRESSED && keys.down ==
-                            RELEASED) : "keys.up/keys.down error";
+                    up = RELEASED;
+                    assert (up == PRESSED && down ==
+                            RELEASED) : "up/down error";
                 }
                 break;
-            // keys.down arrow/S - move keys.down.
+            // down arrow/S - move down.
             case KeyEvent.VK_DOWN: case KeyEvent.VK_S:
-                setState(keys.down, state);
+                setState(down, state);
                 if (state) {
-                    keys.up = RELEASED;
-                    assert (keys.down == PRESSED && keys.up ==
-                            RELEASED) : "keys.down/keys.up error";
+                    up = RELEASED;
+                    assert (down == PRESSED && up ==
+                            RELEASED) : "down/up error";
                 }
                 break;
-            // keys.left arrow/A - move keys.left.
+            // left arrow/A - move left.
             case KeyEvent.VK_LEFT: case KeyEvent.VK_A:
-                setState(keys.left, state);
+                setState(left, state);
                 if (state) {
-                    keys.right = RELEASED;
-                    assert (keys.left == PRESSED && keys.right ==
-                            RELEASED) : "keys.left/keys.right error";
+                    right = RELEASED;
+                    assert (left == PRESSED && right ==
+                            RELEASED) : "left/right error";
                 }
                 break;
-            // keys.right arrow/D - move keys.right.
+            // right arrow/D - move right.
             case KeyEvent.VK_RIGHT: case KeyEvent.VK_D:
-                setState(keys.right, state);
+                setState(right, state);
                 if (state) {
-                    keys.left = RELEASED;
-                    assert (keys.right == PRESSED && keys.left ==
-                            RELEASED) : "keys.right/keys.left error";
+                    left = RELEASED;
+                    assert (right == PRESSED && left ==
+                            RELEASED) : "right/left error";
                 }
                 break;
             // Shift/R - run.
             case KeyEvent.VK_R: case KeyEvent.VK_SHIFT:
-                setState(keys.run, state);
-                assert (keys.run == state) : "run error";
+                setState(run, state);
+                assert (run == state) : "run error";
                 break;
-            // P/Space - action/firetraps.
+            // P/Space - action/fire traps.
             case KeyEvent.VK_P: case KeyEvent.VK_SPACE:
-                setState(keys.action, state);
-                assert (keys.action == state) : "action error";
+                setState(action, state);
+                assert (action == state) : "action error";
                 break;
             // Escape - pause/cancel/exit.
             case KeyEvent.VK_ESCAPE:
-                setState(keys.esc, state);
-                assert (keys.esc == state) : "pause error";
+                setState(esc, state);
+                assert (esc == state) : "pause error";
                 break;
             // Enter - accept (menu).
             case KeyEvent.VK_ENTER:
-                setState(keys.accept, state);
-                assert (keys.accept == state) : "accept error";
+                setState(accept, state);
+                assert (accept == state) : "accept error";
                 break;
         }
     }
@@ -131,8 +138,24 @@ public class ZombieKeyboard extends KeyAdapter {
      * @param key Which boolean variable to modify.
      * @param state Boolean of whether this is a key pressed or released event.
      */
-    private void setState(boolean key, boolean state) {
+    private void setState(Boolean key, boolean state) {
         key = (state ? PRESSED : RELEASED);
+    }
+    
+    /**
+     * Links the main game controller's key state variables.
+     */
+    public void linkToMain(Boolean up, Boolean down, Boolean left,
+                Boolean right, Boolean run, Boolean action, Boolean esc,
+                Boolean accept) {
+        this.up = up;
+        this.down = down;
+        this.left = left;
+        this.right = right;
+        this.run = run;
+        this.action = action;
+        this.esc = esc;
+        this.accept = accept;
     }
     
 }

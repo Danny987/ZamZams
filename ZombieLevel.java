@@ -60,8 +60,14 @@ public class ZombieLevel {
             throw ex;
         }
         zombies = setZombies();
-        // On instantiation, layout is set to the original level layout.
-        this.layout = original = layout;
+        // On instantiation, layout is set to a copy of the original array.
+        this.layout = new char[layout.length][layout[0].length];
+        original = new char[layout.length][layout[0].length];
+        for (int x = 0; x < layout.length; x++) {
+            for (int y = 0; y < layout[0].length; y++) {
+                this.layout[x][y] = original[x][y] = layout[x][y];
+            }
+        }
     }
     
     /**
