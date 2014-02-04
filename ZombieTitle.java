@@ -38,6 +38,7 @@ public class ZombieTitle extends JPanel {
     public ZombieTitle() {
         super(new BorderLayout());
         setBackground(Color.BLACK);
+        setFocusable(false);
         // Get the images.
         try {
             titleBackground = new ImageIcon(this.getClass().getResource(
@@ -73,12 +74,13 @@ public class ZombieTitle extends JPanel {
     }
     
     /**
-     * Override of paintComponent for actually drawing the image.
+     * Override of paint for actually drawing the image.
      * 
      * @param g Graphics device on which to do the drawing; provided by system.
      */
     @Override
     public void paintComponent(Graphics g) {
+        super.paintComponent(g);
         Graphics2D graph = (Graphics2D) g;
         graph.drawImage(titleBackground, 0, 0, null);
         if (selected == "start") {

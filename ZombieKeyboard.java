@@ -16,23 +16,25 @@ import java.awt.event.KeyEvent;
  * ZombieKeyboard - a keyboard listener for ZombieHouse.
  * 
  * @author Ramon A. Lovato
- * @group Danny Gomez
- * @group James Green
- * @group Marcos Lemus
- * @group Mario LoPrinzi
+ * @grokeys.up Danny Gomez
+ * @grokeys.up James Green
+ * @grokeys.up Marcos Lemus
+ * @grokeys.up Mario LoPrinzi
  */
 public class ZombieKeyboard extends KeyAdapter {
     private static final boolean PRESSED = true;
     private static final boolean RELEASED = false;
-    // The key states.
-    private boolean up;
-    private boolean down;
-    private boolean left;
-    private boolean right;
-    private boolean run;
-    private boolean action;
-    private boolean esc;
-    private boolean accept;
+    
+    private ZombieKeyStates keys;
+    
+    /**
+     * ZombieKeyboard default constructor.
+     * 
+     * @param keys ZombieKeyStates object whose key variables should be updated.
+     */
+    public ZombieKeyboard(ZombieKeyStates keys) {
+        this.keys = keys;
+    }
     
     /**
      * keyPressed - triggered when a key is pressed.
@@ -64,61 +66,61 @@ public class ZombieKeyboard extends KeyAdapter {
         // button(s) were pressed/released. If a direction was pressed, sets the
         // opposite direction to RELEASED. Verified with asserts.
         switch(keyCode) {
-            // Up arrow/W - move up.
+            // keys.up arrow/W - move keys.up.
             case KeyEvent.VK_UP: case KeyEvent.VK_W:
-                setState(up, state);
+                setState(keys.up, state);
                 if (state) {
-                    up = RELEASED;
-                    assert (up == PRESSED && down ==
-                            RELEASED) : "up/down error";
+                    keys.up = RELEASED;
+                    assert (keys.up == PRESSED && keys.down ==
+                            RELEASED) : "keys.up/keys.down error";
                 }
                 break;
-            // Down arrow/S - move down.
+            // keys.down arrow/S - move keys.down.
             case KeyEvent.VK_DOWN: case KeyEvent.VK_S:
-                setState(down, state);
+                setState(keys.down, state);
                 if (state) {
-                    up = RELEASED;
-                    assert (down == PRESSED && up ==
-                            RELEASED) : "down/up error";
+                    keys.up = RELEASED;
+                    assert (keys.down == PRESSED && keys.up ==
+                            RELEASED) : "keys.down/keys.up error";
                 }
                 break;
-            // Left arrow/A - move left.
+            // keys.left arrow/A - move keys.left.
             case KeyEvent.VK_LEFT: case KeyEvent.VK_A:
-                setState(left, state);
+                setState(keys.left, state);
                 if (state) {
-                    right = RELEASED;
-                    assert (left == PRESSED && right ==
-                            RELEASED) : "left/right error";
+                    keys.right = RELEASED;
+                    assert (keys.left == PRESSED && keys.right ==
+                            RELEASED) : "keys.left/keys.right error";
                 }
                 break;
-            // Right arrow/D - move right.
+            // keys.right arrow/D - move keys.right.
             case KeyEvent.VK_RIGHT: case KeyEvent.VK_D:
-                setState(right, state);
+                setState(keys.right, state);
                 if (state) {
-                    left = RELEASED;
-                    assert (right == PRESSED && left ==
-                            RELEASED) : "right/left error";
+                    keys.left = RELEASED;
+                    assert (keys.right == PRESSED && keys.left ==
+                            RELEASED) : "keys.right/keys.left error";
                 }
                 break;
             // Shift/R - run.
             case KeyEvent.VK_R: case KeyEvent.VK_SHIFT:
-                setState(run, state);
-                assert (run == state) : "run error";
+                setState(keys.run, state);
+                assert (keys.run == state) : "run error";
                 break;
             // P/Space - action/firetraps.
             case KeyEvent.VK_P: case KeyEvent.VK_SPACE:
-                setState(action, state);
-                assert (action == state) : "action error";
+                setState(keys.action, state);
+                assert (keys.action == state) : "action error";
                 break;
             // Escape - pause/cancel/exit.
             case KeyEvent.VK_ESCAPE:
-                setState(esc, state);
-                assert (esc == state) : "pause error";
+                setState(keys.esc, state);
+                assert (keys.esc == state) : "pause error";
                 break;
             // Enter - accept (menu).
             case KeyEvent.VK_ENTER:
-                setState(accept, state);
-                assert (accept == state) : "accept error";
+                setState(keys.accept, state);
+                assert (keys.accept == state) : "accept error";
                 break;
         }
     }
