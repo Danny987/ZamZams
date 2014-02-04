@@ -23,6 +23,8 @@ public class ZombieHouse {
     // Provide permanent references to active instances of the various modules.
     private ZombieMainGame game;
     private ZombieFrame window;
+    // A thread lock for the GUI processes.
+    private final Object windowLock = new Object();
     
     /**
      * ZombieHouse's default constructor.
@@ -43,10 +45,15 @@ public class ZombieHouse {
         // Schedule GUI creation on the event-dispatch thread.
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                // TODO: remove ZombieTitle and make MainGame handle it.
-                ZombieFrame newFrame = new ZombieFrame(new ZombieTitle());
+                ZombieFrame newFrame = new ZombieFrame();
                 // Store a reference for later.
                 window = newFrame;
+                // setFrame is locked from continuing until window has been
+                // assigned, so we need to release it. This prevents issues
+                // with concurrency.
+                synchronized (windowLock) {
+                    windowLock.notifyAll();
+                }
             }
         });
     }
@@ -57,6 +64,33 @@ public class ZombieHouse {
     private void startMainGame() {
         game = new ZombieMainGame();
     }
+    
+    /**
+     * Pass the frame to the main game controller.
+     */
+    private void setFrame() {
+        // Since the GUI instantiation is happening on a different thread, it
+        // might not have happened yet when setFrame gets called, so we need to
+        // synchronize them.
+        synchronized (windowLock) {
+            try {
+                windowLock.wait();
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
+            }
+        }
+        // Calls the main game controller's setFrame method. This also passes
+        // the frame's keyboard listener to the controller.
+        game.setFrame(window);
+    }
+    
+    /**
+     * Hands off primary control to ZombieMainGame. Called after initialization
+     * routines complete.
+     */
+    private void relinquishControl() {
+        game.takeControl();
+    }
 
 	/**
 	 * ZombieHouse's main method.
@@ -65,8 +99,14 @@ public class ZombieHouse {
 	 */
 	public static void main(String[] args) {
         ZombieHouse zombieHouse = new ZombieHouse();
+        
         zombieHouse.startGUI();
         zombieHouse.startMainGame();
+        zombieHouse.setFrame();
+        
+        // Once the initialization routines are complete, ZombieHouse hands off
+        // primary control to ZombieMainGame.
+        zombieHouse.relinquishControl();
 	}
 	
 }

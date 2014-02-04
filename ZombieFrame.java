@@ -28,12 +28,14 @@ public class ZombieFrame extends JFrame {
 	private static final long serialVersionUID = 1L;
 	
 	private Dimension size;
-	private ZombieKeyboard keyboard = new ZombieKeyboard();
+	private Container pane;
+	private ZombieKeyStates keys = new ZombieKeyStates();
+	private ZombieKeyboard keyboard = new ZombieKeyboard(keys);
 	
 	/**
 	 * ZombieFrame's constructor.
 	 * 
-	 * @param contents Optional JPanel(s) to use as content pane. Arguments > 0
+	 * @param contents Optional JPanel(s) to add to content pane. Arguments > 0
 	 *        are ignored.
 	 */
 	public ZombieFrame(JPanel... contents) {
@@ -51,16 +53,15 @@ public class ZombieFrame extends JFrame {
         setResizable(false);
         setBackground(Color.BLACK);
         
-        // The content pane. Since the content pane is an optional parameter of
-        // the constructor, it creates an empty pane with a black background if
-        // one isn't provided. This can be changed later with setContentPane.
+        // The content pane. An optional JPanel may be passed into the
+        // constructor. It creates an empty pane with a black background if
+        // one isn't provided.
+        pane = getContentPane();
+        pane.setBackground(Color.BLACK);
+        pane.setFocusable(false);
+        pane.setVisible(true);
         if (contents.length > 0) {
-            setContentPane(contents[0]);
-        } else {
-            JPanel emptyPane = new JPanel();
-            emptyPane.setBackground(Color.BLACK);
-            emptyPane.setOpaque(true);
-            setContentPane(emptyPane);
+            pane.add(contents[0]);
         }
         
         // Get the graphics device information.
@@ -77,7 +78,7 @@ public class ZombieFrame extends JFrame {
                 // Having gone full screen, retrieve the display size.
                 size = Toolkit.getDefaultToolkit().getScreenSize();
             } catch (HeadlessException ex) {
-                System.err.println("Why would you even play this headless?");
+                ex.printStackTrace();;
             }
         } else {
             // If full-screen-exclusive mode isn't supported, switch to
@@ -106,5 +107,14 @@ public class ZombieFrame extends JFrame {
 	public ZombieKeyboard getKeyboard() {
 	    return keyboard;
 	}
+	
+	/**
+     * Getter for keys.
+     * 
+     * @return keys ZombieKeyStates object containing the keyboard states.
+     */
+    public ZombieKeyStates getKeyStates() {
+        return keys;
+    }
 	
 }
