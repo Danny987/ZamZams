@@ -34,37 +34,8 @@ public class House {
 					houseLayout[x][y] = '.';
 	}
 	
-	public void setPlayer(int sight, int hear, int speed, int stamina, float regen)
-	{
-		this.playerSight = sight;
-		this.playerHear = hear;
-		this.playerSpeed = speed;
-		this.playerStamina = stamina;
-		this.playerRegen = regen;
-	}
-	
-	public void printProperties()
-	{
-		System.out.println("\nHouse Number: " + houseNumber);
-		System.out.println("  Width: " + width);
-		System.out.println("  Length: " + length);
-		System.out.println("  Exit Wall: " + exitWall);
-	}
-	
-	//draw the house layout array
-	public void drawHouse()
-	{
-		for(int y = 0; y < length; y++)
-		{
-			for(int x = 0; x < width; x++)
-				System.out.print(houseLayout[x][y]);
-
-			System.out.print("\n");
-		}
-	}
-	
 	//create an object based on 4 coordinates
-	public void createObj(int x1, int x2, int y1, int y2) {
+	public boolean createObj(int x1, int x2, int y1, int y2) {
 		int area = (Math.abs(x2 - x1)+1 * Math.abs(y2 - y1)+1); //get area of the obj
 		int leftX = x1; int rightX = x2; int topY = y1; int botY = y2;
 		
@@ -86,16 +57,30 @@ public class House {
 		{
 			for(int x = leftX; x < rightX+1; x++)
 			{
+				if(houseLayout[x][y] != '.')
+					return false;
+			}
+			for(int x = leftX; x < rightX+1; x++)
+			{
 				if(area <= 1) houseLayout[x][y] = 'S';
 				else if(area > 9) houseLayout[x][y] = 'L';
 				else houseLayout[x][y] = 'M';
 			}
 		}
-		
+		return true;
 	}
-
-	//create a vertical or horizontal wall
-	public void createWall(int wallType, int c1, int c2, int c3) {
+	
+	public boolean createZombie(int x, int y, int smell, float speed, int walkType, int probA, int probB)
+	{
+		//create zombie object
+		//set zombie properties
+		//check for valid x/y
+		//add zombie to zombieList
+		return false;
+	}
+	
+	//creates an inner wall
+	public boolean createWall(int wallType, int c1, int c2, int c3) {
 		//wallType 1 = vertical, 2 = horizontal
 		
 		int low = c2;
@@ -112,14 +97,58 @@ public class House {
 		if(wallType == 1) //insert vertical wall
 		{
 			for(int y = low; y < high+1; y++)
-				houseLayout[c1][y] = 'W';
+			{
+				if(houseLayout[c1][y] != '.') 
+					return false;
+			}
+			for(int y = low; y < high+1; y++)
+				houseLayout[c1][y] = 'V';
 			
 		}
 		else if (wallType == 2) //insert horizontal wall
 		{
 			for(int x = low; x < high+1; x++)
-				houseLayout[x][c1] = 'W';
-
+			{
+				if(houseLayout[x][c1] != '.') return false;
+			}
+			for(int x = low; x < high+1; x++)
+				houseLayout[x][c1] = 'H';
 		}
+		return true;
+	}
+	
+	public void printProperties()
+	{
+		System.out.println("House Number: " + houseNumber);
+		System.out.println("  Width: " + width);
+		System.out.println("  Length: " + length);
+		System.out.println("  Exit Wall: " + exitWall + "\n");
+	}
+	
+	//draw the house layout array
+	public void drawHouse()
+	{
+		for(int y = 0; y < length; y++)
+		{
+			for(int x = 0; x < width; x++)
+				System.out.print(houseLayout[x][y]);
+
+			System.out.print("\n");
+		}
+	}
+
+	public boolean createFirettrap(int x, int y) {
+		// TODO Auto-generated method stub
+		if(houseLayout[x][y] == '.')
+			houseLayout[x][y] = 'F';
+		else
+			return false;
+		return true;
+	}
+
+	public boolean createPlayer(int sight, int hear, float speed, int stamina,
+			float regen) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }
