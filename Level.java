@@ -16,6 +16,7 @@
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 
@@ -498,13 +499,24 @@ public class Level{
 	private NodeList parseXml(String fileName)
 	{
 		//check if xml file exists
+		FileInputStream fstream = null;
 		try{
 			// Open the xml file
-			FileInputStream fstream = new FileInputStream(fileName);
+			fstream = new FileInputStream(fileName);
 		}catch (Exception e){//Catch exception if any
 			errorFlag = 1;
 			errorString = "Config file could not be loaded.";
 			return null;
+		}finally
+		{
+			try
+			{
+				if(fstream != null)
+					fstream.close();
+			}
+			catch (IOException e)
+			{
+			}
 		}
 
 		File xmlFile = new File(fileName);
