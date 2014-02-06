@@ -1,4 +1,5 @@
 import java.awt.Point;
+import java.awt.Rectangle;
 
 /**
  * @author Mario LoPrinzi
@@ -18,10 +19,16 @@ public class Zombie extends Character
     this.walkType = walkType;
     this.probabiltyA = probabilityA;
     this.probablityB = probabilityB;
+    this.hitbox = new Rectangle(position.x, position.y, 50, 50);
   }
 
   public void setSmell(float adjustedSmell)
   {
     this.smell = adjustedSmell;
+  }
+
+  public Rectangle getHitbox()
+  {
+    return this.hitbox;
   }
 }
