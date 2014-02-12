@@ -30,18 +30,15 @@ public class ZombieTitle extends JPanel {
     
     private String selected;
     
-    private long hours;
-    private long mins;
-    private long secs;
+    private long startTime;
+    private long elapsedTime;
     
     /**
      * Default constructor.
      */
     public ZombieTitle() {
         super(new BorderLayout());
-        hours = 11;
-        mins = 23;
-        secs = 0;
+        startTime = elapsedTime = System.currentTimeMillis();
         setBackground(Color.BLACK);
         // Get the images.
         try {
@@ -62,42 +59,41 @@ public class ZombieTitle extends JPanel {
     }
     
     /**
-     * Increments the time since infection display counters.
-     */
-    public void incrementTime() {
-        ++secs;
-        // Seconds -> minutes.
-        if (secs >= 60) {
-            secs = 0;
-            ++mins;
-        }
-        // Minutes -> hours.
-        if (mins >= 60) {
-            mins = 0;
-            ++hours;
-        }
-    }
-    
-    /**
      * Converts the time since infection display counters to a string.
      * 
      * @return time String representation of the current timers.
      */
     private String getTime() {
         StringBuilder time = new StringBuilder("");
+        elapsedTime = System.currentTimeMillis() - startTime;
+        long elapsedSecs = elapsedTime / 1000;
+        long elapsedMins = elapsedSecs / 60;
+        long hours = elapsedMins / 60;
+        long mins = elapsedMins % 60;
+        long secs = elapsedSecs % 60;
         
         // Hours.
         if (hours < 10) {
             time.append("0");
         }
         time.append(hours);
-        time.append(":");
+        // Flash the separators.
+        if (secs % 2 == 0) {
+            time.append(":");
+        } else {
+            time.append(" ");
+        }
         // Minutes.
         if (mins < 10) {
             time.append("0");
         }
         time.append(mins);
-        time.append(":");
+        // Flash the separators.
+        if (secs % 2 == 0) {
+            time.append(":");
+        } else {
+            time.append(" ");
+        }
         // Seconds.
         if (secs < 10) {
             time.append("0");

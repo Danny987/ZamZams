@@ -62,7 +62,7 @@ public class ZombieMainGame {
         input.put("run", false);
         input.put("action", false);
         input.put("escape", false);
-        input.put("accept", false);
+        input.put("enter", false);
         
         mode = ZombieMode.TITLE;
         
@@ -75,7 +75,10 @@ public class ZombieMainGame {
                 frameUpdate();
             }
         };
-        // 30 hz.
+        // The FPS is set to 30, but this is a little misleading. Since the
+        // timer delay is an int, 1000 ms/30 = 33.33 repeating rounds down to
+        // 33. Consequently, the timer gains one frame for approximately every
+        // three, so the effective frame rate is actually closer to 40 FPS.
         timer = new Timer(DELAY, gameClock);
         timer.setInitialDelay(DELAY);
         timer.addActionListener(gameClock);
@@ -126,6 +129,14 @@ public class ZombieMainGame {
     }
     
     /**
+     * Starts game play.
+     */
+    public void start() {
+        // Start the game.
+        // mode = ZombieMode.PLAYING;
+    }
+    
+    /**
      * Hands over primary control from ZombieHouse to ZombieMainGame. Called by
      * ZombieHouse's main method after completing its initialization routines.
      */
@@ -172,17 +183,24 @@ public class ZombieMainGame {
     
     /**
      * A helper method to handle keyboard input on the title screen. Called
-     * each frame.
+     * each frame. Also increments the title screen timer every other frame.
      */
     private void titleHelper() {
         if (title != null) {
-            if (frameCounter == 1) {
-                title.incrementTime();
-            }
-            // Controls. Uses the frame counter to space out firings.
+            // Controls. Uses the frame counter to space out button switches.
             if ((input.get("left") || input.get("right")) &&
                     frameCounter % 7 == 0) {
                 title.switchButton();
+            }
+            if (input.get("enter") || input.get("action")) {
+                if (title.getSelected() == "start") {
+                    start();
+                } else {
+                    shutdown();
+                }
+            }
+            if (input.get("escape")) {
+                shutdown();
             }
         }
     }
