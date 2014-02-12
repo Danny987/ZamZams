@@ -39,8 +39,8 @@ public class ZombieTitle extends JPanel {
      */
     public ZombieTitle() {
         super(new BorderLayout());
-        hours = 1;
-        mins = 0;
+        hours = 11;
+        mins = 23;
         secs = 0;
         setBackground(Color.BLACK);
         // Get the images.
@@ -65,12 +65,11 @@ public class ZombieTitle extends JPanel {
      * Increments the time since infection display counters.
      */
     public void incrementTime() {
+        ++secs;
         // Seconds -> minutes.
-        if (++secs >= 60) {
+        if (secs >= 60) {
             secs = 0;
             ++mins;
-        } else {
-            ++secs;
         }
         // Minutes -> hours.
         if (mins >= 60) {
@@ -133,7 +132,6 @@ public class ZombieTitle extends JPanel {
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        System.out.println("selected = " + selected);
         g.drawImage(titleBackground, 0, 0, null);
         
         

@@ -88,15 +88,24 @@ public class ZombieMainGame {
      */
     private void frameUpdate() {
         // Update the frame counter.
-        frameCounter = (frameCounter + 1 > FPS ? 1 : frameCounter++);
+        if (++frameCounter > FPS) {
+            frameCounter = 1;
+        }
         
         // Call the right method depending on the game mode.
-        if (mode == ZombieMode.TITLE) {
-            titleHelper();
-        } else if (mode == ZombieMode.PAUSED) {
-            // If paused.
-        } else {
-            // If playing.
+        switch (mode) {
+            case TITLE:
+                titleHelper();
+                break;
+            case PAUSED:
+                // If paused.
+                break;
+            case PLAYING:
+                // If playing.
+                break;
+            default:
+                break;
+        }
             
             // TODO: testing code.
 //            if (keys.up) {
@@ -111,7 +120,6 @@ public class ZombieMainGame {
 //            if (keys.right) {
 //                player.move(2, 0, false);
 //            }
-        }
         
         // Repaint the GUI.
         frame.repaint();
@@ -135,9 +143,30 @@ public class ZombieMainGame {
      * @param str String representation of the key state change.
      */
     public void updateInput(String str) {
-        boolean state = (str.startsWith("released") ? false : true);
-        String key = (state ? str : str.substring(10));
+        Boolean state = (str.startsWith("released") ? false : true);
+        String key = (state ? str : str.substring(9));
         input.put(key, state);
+        // If one of the directions was pressed, automatically release the
+        // opposite direction.
+        if (state) {
+            switch (str) {
+                case "up":
+                    input.put("down", false);
+                    break;
+                case "down":
+                    input.put("up", false);
+                    break;
+                case "left":
+                    input.put("right", false);
+                    break;
+                case "right":
+                    input.put("left", false);
+                    break;
+                default:
+                    break;
+            }
+        }
+        
         assert(input.get(key) == state);
     }
     
@@ -146,11 +175,15 @@ public class ZombieMainGame {
      * each frame.
      */
     private void titleHelper() {
-        title.incrementTime();
-        System.out.println("test");
-        // Controls.
-        if (input.get("left") || input.get("right")) {
-            title.switchButton();
+        if (title != null) {
+            if (frameCounter == 1) {
+                title.incrementTime();
+            }
+            // Controls. Uses the frame counter to space out firings.
+            if ((input.get("left") || input.get("right")) &&
+                    frameCounter % 7 == 0) {
+                title.switchButton();
+            }
         }
     }
     
@@ -238,6 +271,18 @@ public class ZombieMainGame {
     public void shutdown() {
         // Exit with error-free status.
         System.exit(0);
+    }
+    
+    /**
+     * A debugging method that prints out the input states.
+     */
+    public void printInput() {
+        System.out.println("---input map---");
+        for (Map.Entry<String, Boolean> entry : input.entrySet()) {
+            String key = entry.getKey();
+            String value = (entry.getValue() ? "true" : "false");
+            System.out.println(key + ": " + value);
+        }
     }
 
     /**

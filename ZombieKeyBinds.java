@@ -133,54 +133,6 @@ public class ZombieKeyBinds {
             // Test to make sure the main game has been linked.
             if (game != null) {
                 game.updateInput(action.toLowerCase());
-                // Up.
-                if (action.equalsIgnoreCase("Up")) {
-                    System.out.println("Up pressed.");
-                } else if (action.equalsIgnoreCase("released Up")) {
-                    System.out.println("Up released.");
-                }
-                // Down.
-                if (action.equalsIgnoreCase("Down")) {
-                    System.out.println("Down pressed.");
-                } else if (action.equalsIgnoreCase("released Down")) {
-                    System.out.println("Down released.");
-                }
-                // Left.
-                if (action.equalsIgnoreCase("Left")) {
-                    System.out.println("Left pressed.");
-                } else if (action.equalsIgnoreCase("released Left")) {
-                    System.out.println("Left released.");
-                }
-                // Right.
-                if (action.equalsIgnoreCase("Right")) {
-                    System.out.println("Right pressed.");
-                } else if (action.equalsIgnoreCase("released Right")) {
-                    System.out.println("Right released.");
-                }
-                // R - run.
-                if (action.equalsIgnoreCase("Run")) {
-                    System.out.println("Run pressed.");
-                } else if (action.equalsIgnoreCase("released Run")) {
-                    System.out.println("Run released.");
-                }
-                // P/space - action/traps.
-                if (action.equalsIgnoreCase("Action")) {
-                    System.out.println("Action pressed.");
-                } else if (action.equalsIgnoreCase("released Action")) {
-                    System.out.println("Action released.");
-                }
-                // Escape - pause/cancel/exit.
-                if (action.equalsIgnoreCase("Escape")) {
-                    System.out.println("Escape pressed.");
-                } else if (action.equalsIgnoreCase("released Escape")) {
-                    System.out.println("Escape released.");
-                }
-                // Enter - accept.
-                if (action.equalsIgnoreCase("Enter")) {
-                    System.out.println("Enter pressed.");
-                } else if (action.equalsIgnoreCase("released Enter")) {
-                    System.out.println("Enter released.");
-                }
             }
         }
     }
