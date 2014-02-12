@@ -10,7 +10,6 @@
  * based on their parameters.
  * 
  * House objects are stored here.
- * totalHouses variable is stored here.
  * 
  */
 
@@ -64,7 +63,18 @@ public class Level{
 
 	//set the player, zombie, and exit positions in each house
 	private void validateHouses() {
-		// TODO Auto-generated method stub
+		
+		//go through each house
+		for(int i = 0; i < houseList.size(); i++)
+		{
+			//set zombie positions
+			if(!houseList.get(i).setZombiePositions())
+			{
+				errorFlag = 1;
+				errorString = "Couoldn't place 'zombie' in house " + i + ".";
+				return;
+			}
+		}
 
 	}
 
@@ -217,7 +227,7 @@ public class Level{
 		if(element.getAttribute("randomwalk") != "" && element.getAttribute("linewalk") != "")
 		{
 			errorFlag = 1;
-			errorString = "'randomwalk' and 'linewalk' found in 'zombie' attribute in house " + houseNumber + ".";
+			errorString = "'randomwalk' and 'linewalk' attributes found in 'zombie' in house " + houseNumber + ".";
 			return false;
 		}
 		//check if wall is vertical
@@ -250,7 +260,7 @@ public class Level{
 		if(probArr.length != 2) //if it doesn't result in 2 strings, error
 		{
 			errorFlag = 1;
-			errorString = "Invalid 'randomwalk' or 'linewalk' for 'zombie' attribute in house " + houseNumber + ".";
+			errorString = "Invalid 'randomwalk' or 'linewalk' attribute for 'zombie' in house " + houseNumber + ".";
 			return false;
 		}
 		//remove all chars but digits
@@ -262,6 +272,14 @@ public class Level{
 			probA = Integer.parseInt(probArr[0]);
 		if((Integer.parseInt(probArr[1]) >= 0) && (Integer.parseInt(probArr[1]) <= 100))
 			probB = Integer.parseInt(probArr[1]);
+		
+		//if the 'x' and 'y' were set, make sure none or both were set
+		if((x == -1 && y != -1) || (x != -1 && y == 1))
+		{
+			errorFlag = 1;
+			errorString = "Invalid 'x' or 'y' attribute 'zombie' in house " + houseNumber + ".";
+			return false;
+		}
 
 		//check for missing required attributes
 		if(smell < 0 || speed < 0 || walkType < 0 || probA < 0 || probB < 0)
@@ -272,12 +290,8 @@ public class Level{
 		}
 
 		//if we got here, create zombie
-		/*if(!houseList.get(houseNumber).createZombie(x, y, smell, speed, walkType, probA, probB))
-		{
-			errorFlag = 1;
-			errorString = "Could not place 'zombie' in house " + houseNumber + ".";
-			return false;
-		}*/
+		houseList.get(houseNumber).createZombie(x, y, smell, speed, walkType, probA, probB);
+		
 		return true;
 	}
 
@@ -367,6 +381,7 @@ public class Level{
 			errorString = "Invalid or missing 'obj' attribute in house " + houseNumber + ".";
 			return false;
 		}
+		
 
 		//if we got here, create the object
 		if(!houseList.get(houseNumber).createObj(x1, x2, y1, y2))
@@ -430,7 +445,7 @@ public class Level{
 			if(element.getAttribute("y2").matches(numReg))
 				c3 = Integer.parseInt(element.getAttribute("y2"));
 		}
-
+			
 		//check for missing required attributes
 		if(c1 < 1 || c2 < 1 || c3 < 1)
 		{

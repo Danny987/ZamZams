@@ -18,4 +18,5 @@
     <obj x1="6" x2="6" y1="6" y2="6"/>
   
     <zombie x="2" y="7" smell="15" speed="1" linewalk="98%:90%"/>
+  </house>
 </levels>
