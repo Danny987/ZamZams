@@ -72,13 +72,15 @@ public class ZombieMainGame {
         ActionListener gameClock = new ActionListener() {
             public void actionPerformed(ActionEvent ev) {
                 // Perform framewise updates.
-                frameUpdate();
+                if (hasControl) {
+                    frameUpdate();
+                }
             }
         };
         // The FPS is set to 30, but this is a little misleading. Since the
-        // timer delay is an int, 1000 ms/30 = 33.33 repeating rounds down to
-        // 33. Consequently, the timer gains one frame for approximately every
-        // three, so the effective frame rate is actually closer to 40 FPS.
+        // timer delay is an int, 1000 ms/30 FPS = 33.33 repeating rounds down
+        // to 33. Consequently, the timer gains one frame for approximately
+        // every three, so the effective frame rate is actually closer to 40.
         timer = new Timer(DELAY, gameClock);
         timer.setInitialDelay(DELAY);
         timer.addActionListener(gameClock);
@@ -143,7 +145,6 @@ public class ZombieMainGame {
     public void takeControl() {    
         linkToKeyBinds();
         hasControl = true;
-        // TODO: test code.
         // Show the title screen.
         showTitle();
     }
@@ -188,6 +189,7 @@ public class ZombieMainGame {
     private void titleHelper() {
         if (title != null) {
             // Controls. Uses the frame counter to space out button switches.
+            // TODO: make this smoother.
             if ((input.get("left") || input.get("right")) &&
                     frameCounter % 7 == 0) {
                 title.switchButton();
@@ -209,7 +211,6 @@ public class ZombieMainGame {
      * Displays the title screen.
      */
     private void showTitle() {
-        // TODO: testing code.
         title = new ZombieTitle();
         title.setVisible(true);
         while (frame == null) {
@@ -245,42 +246,6 @@ public class ZombieMainGame {
         } catch (NullPointerException ex) {
             ex.printStackTrace();
         }
-    }
-    
-    /**
-     * Getter for timer.
-     * 
-     * @return timer Main game timer.
-     */
-    public Timer getTimer() {
-        return timer;
-    }
-    
-    /**
-     * Getter for frame.
-     * 
-     * @return frame ZombieFrame in which the game is displayed.
-     */
-    public ZombieFrame getFrame() {
-        return frame;
-    }
-    
-    /**
-     * Gets the state of the current level.
-     * 
-     * @return level ZombieLevel containing the state of the current level.
-     */
-    public ZombieLevel getLevel() {
-        return level;
-    }
-    
-    /**
-     * Getter for frameCounter.
-     * 
-     * @return frameCounter Number of frames elapsed this second.
-     */
-    public int getFrameCounter() {
-        return frameCounter;
     }
     
     /**

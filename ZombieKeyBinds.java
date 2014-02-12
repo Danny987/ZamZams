@@ -9,7 +9,6 @@
  * Mario LoPrinzi
  */
 
-import java.awt.Container;
 import java.awt.event.*;
 
 import javax.swing.*;

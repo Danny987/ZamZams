@@ -10,8 +10,6 @@
  */
 
 import java.awt.Dimension;
-import java.awt.Point;
-import java.util.ArrayList;
 
 /**
  * ZombieLevel - a wrapper class to encapsulate all data for a single level.
@@ -24,124 +22,53 @@ import java.util.ArrayList;
  */
 public class ZombieLevel {
     /*
-     * S - small object
-     * M - medium object
-     * L - large object
-     * P - player
-     * Z - zombie
-     * F - firetrap
-     * W - outer wall
-     * I - inner wall
-     * E - exit
-     * . - floor tile
+     * Char codes (not all utilized):
+     *   S - small object
+     *   M - medium object
+     *   L - large object
+     *   P - player
+     *   Z - zombie
+     *   F - firetrap
+     *   W - outer wall
+     *   I - inner wall
+     *   E - exit
+     *   . - floor tile
      * 
-     * B - blackened floor tile (not included in XML - only caused by fire
-     *     traps).
+     *   B - blackened floor tile (not included in XML - only caused by fire
+     *       traps).
      */
-    private final Point player;
-    private final ArrayList<ZombiePlaceholder> zombies;
-    private final char[][] original;
-    private char[][] layout;
+    private final Tile[][] original;
+    private Tile[][] layout;
     
     /**
      * ZombieLevel's constructor.
      * 
-     * @param layout 2-D char array representing the level's floor layout.
-     * @throws NoPlayerStartException Missing player start location.
-     * @throws MultiplePlayerStartsException Too many player start locations.
+     * @param layout 2-D Tile array representing the level's floor layout.
      */
-    public ZombieLevel(char[][] layout) throws NoPlayerStartException,
-        MultiplePlayerStartsException {
-        // Before storing the original level, we need to go through and grab
-        // the player and zombie locations and remove them from the array.
-        try {
-            player = setPlayer();
-        } catch (NoPlayerStartException | MultiplePlayerStartsException ex) {
-            throw ex;
-        }
-        zombies = setZombies();
+    public ZombieLevel(Tile[][] layout) {
         // On instantiation, layout is set to a copy of the original array.
-        this.layout = new char[layout.length][layout[0].length];
-        original = new char[layout.length][layout[0].length];
+        this.layout = new Tile[layout.length][layout[0].length];
+        original = new Tile[layout.length][layout[0].length];
         for (int x = 0; x < layout.length; x++) {
             for (int y = 0; y < layout[0].length; y++) {
-                this.layout[x][y] = original[x][y] = layout[x][y];
+                original[x][y] = layout[x][y].cloneTile();
+                this.layout[x][y] = original[x][y].cloneTile();
             }
         }
     }
     
     /**
-     * Finds the player start location in the array and returns it, changing
-     * the tile at that location to a basic floor tile.
-     * 
-     * @throws NoPlayerStartException Missing player start location.
-     * @throws MultiplePlayerStartsException Too many player start locations.
-     * @return Point containing the player start position (in tiles).
-     */
-    private Point setPlayer() throws NoPlayerStartException,
-        MultiplePlayerStartsException {
-        Point player = null;
-        // Searches the array until it finds the player start location.
-        for (int x = 0; x < getSize().width; x++) {
-            for (int y = 0; y < getSize().height; y++) {
-                if (layout[x][y] == 'P') {
-                    // Once it finds the player, it needs to remove the player
-                    // marker from the array and replace it with a normal
-                    // floor tile. If player isn't null, then there are multiple
-                    // start locations, so the level is invalid.
-                    if (player == null) {
-                        layout[x][y] = '.';
-                        player = new Point(x, y);
-                    } else {
-                        throw new MultiplePlayerStartsException();
-                    }
-                }
-            }
-        }
-        // If it didn't find a start location, then the level is invalid.
-        if (player == null) {
-            throw new NoPlayerStartException();
-        }
-        return player;
-    }
-    
-    /**
-     * Finds the zombie start locations, generates new zombies from them, and
-     * places them into a collection.
-     * 
-     * @return ArrayList<Zombie> containing the zombies.
-     */
-    private ArrayList<ZombiePlaceholder> setZombies() {
-        ArrayList<ZombiePlaceholder> zombies = 
-                new ArrayList<ZombiePlaceholder>();
-        // Searches the array for the zombie start locations and uses them to
-        // create new zombies. Since the extremes of the array are always
-        // exterior walls or the exit, we can start at 1 instead of 0 and end
-        // at width/length - 1, slightly reducing the search area.
-        for (int x = 1; x < getSize().width - 1; x++) {
-            for (int y = 1; y < getSize().height - 1; y++) {
-                if (layout[x][y] == 'Z') {
-                    // TODO: Update this once you get the real zombie class.
-                    zombies.add(new ZombiePlaceholder());
-                }
-            }
-        }
-        
-        return zombies;
-    }
-    
-    /**
-     * Changes the state of a single tile.
+     * Changes a single tile to a blackened floor tile.
      * 
      * @param x X-coordinate of tile to modify.
      * @param y Y-coordinate of tile to modify.
-     * @param val New char value to set for tile.
      * @return true if change succeeded; false otherwise.
      */
-    public boolean change(int x, int y, char val) {
+    public boolean blackenTile(int x, int y) {
         // Exterior walls cannot be modified.
-        if (layout[x][y] != 'W' && layout[x][y] != 'E') {
-            layout[x][y] = val;
+        if (layout[x][y].getChar() != 'W') {
+            layout[x][y] = new Tile();
+            layout[x][y].setTile('B', 1, 1);
             return true;
         } else {
             return false;
@@ -153,11 +80,11 @@ public class ZombieLevel {
      * doesn't re-randomize.
      */
     public void revert() {
-        char[][] newLayout = new char[layout.length][layout[0].length];
+        Tile[][] newLayout = new Tile[layout.length][layout[0].length];
         // Iterate through original and copy the tile values to the new array.
         for (int x = 0; x <= layout.length; x++) {
             for (int y = 0; y <= layout[0].length; y++) {
-                newLayout[x][y] = original[x][y];
+                newLayout[x][y] = original[x][y].cloneTile();
             }
         }
         // Redirect layout to point to the new array.
@@ -165,31 +92,13 @@ public class ZombieLevel {
     }
     
     /**
-     * Getter for the player start location.
-     * 
-     * @return player Point containing the player start location.
-     */
-    public Point getPlayer() {
-        return player;
-    }
-    
-    /**
-     * Getter for the list of zombies.
-     * 
-     * @return zombies ArrayList<Zombie> containing the zombies.
-     */
-    public ArrayList<ZombiePlaceholder> getZombies() {
-        return zombies;
-    }
-    
-    /**
      * Getter for individual tiles.
      * 
      * @param x X-coordinate of tile to get.
      * @param y Y-coordinate of tile to get
-     * @return State of tile at requested location as char.
+     * @return Tile at requested location as char.
      */
-    public char getTile(int x, int y) {
+    public Tile getTile(int x, int y) {
         return layout[x][y];
     }
     
@@ -205,9 +114,9 @@ public class ZombieLevel {
     /**
      * Getter for layout.
      * 
-     * @return layout 2-D int array representing the level's floor layout.
+     * @return layout 2-D Tile array representing the level's floor layout.
      */
-    public char[][] getLayout() {
+    public Tile[][] getLayout() {
         return layout;
     }
 }
