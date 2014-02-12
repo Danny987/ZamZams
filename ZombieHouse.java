@@ -79,8 +79,8 @@ public class ZombieHouse {
                 ex.printStackTrace();
             }
         }
-        // Calls the main game controller's setFrame method. This also passes
-        // the frame's keyboard listener to the controller.
+        // Now that we're sure the GUI instantiation is finished, we can link
+        // the frame to the main game controller.
         game.setFrame(window);
     }
     

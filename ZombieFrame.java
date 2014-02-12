@@ -29,7 +29,7 @@ public class ZombieFrame extends JFrame {
 	
 	private Dimension size;
 	private Container pane;
-	private ZombieKeyboard keyboard = new ZombieKeyboard();
+	private ZombieKeyBinds keys;
 	
 	/**
 	 * ZombieFrame's constructor.
@@ -44,8 +44,6 @@ public class ZombieFrame extends JFrame {
 		setFocusable(true);
 		requestFocusInWindow();
 		requestFocus();
-		
-		addKeyListener(keyboard);
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setUndecorated(true);
@@ -63,6 +61,8 @@ public class ZombieFrame extends JFrame {
             pane.add(contents[0]);
         }
         
+        keys = new ZombieKeyBinds((JComponent) pane);
+        
         // Get the graphics device information.
         GraphicsEnvironment environment = 
                 GraphicsEnvironment.getLocalGraphicsEnvironment();
@@ -77,6 +77,8 @@ public class ZombieFrame extends JFrame {
                 // Having gone full screen, retrieve the display size.
                 size = Toolkit.getDefaultToolkit().getScreenSize();
             } catch (HeadlessException ex) {
+                System.err.println("Error: primary display not set or found. "
+                    + "Your experience of life may be suboptimal.");
                 ex.printStackTrace();;
             }
         } else {
@@ -84,9 +86,13 @@ public class ZombieFrame extends JFrame {
             // maximized window mode.
             System.err.println("Full-screen-exclusive mode not supported.");
             setExtendedState(Frame.MAXIMIZED_BOTH);
-            setVisible(true);
             size = getSize();
         }
+        // This double-switching of setVisible is to fix a bug with full-screen-
+        // exclusive mode on OS X. Versions 10.8 and later don't send keyboard
+        // events properly without it.
+        setVisible(false);
+        setVisible(true);
 	}
 	
 	/**
@@ -99,12 +105,12 @@ public class ZombieFrame extends JFrame {
 	}
 	
 	/**
-	 * Getter for keyboard.
+	 * Getter for keys.
 	 * 
-	 * @return keyboard ZombieKeyboard object containing the keyboard listener.
+	 * @return keys ZombieKeyBinds object containing the key binds.
 	 */
-	public ZombieKeyboard getKeyboard() {
-	    return keyboard;
+	public ZombieKeyBinds getKeyBinds() {
+	    return keys;
 	}
 	
 }

@@ -9,11 +9,10 @@
  * Mario LoPrinzi
  */
 
-import java.util.List;
+import java.util.*;
 import java.awt.Container;
 import java.awt.Point;
 import java.awt.event.*;
-
 import javax.swing.Timer;
 
 /**
@@ -37,28 +36,37 @@ public class ZombieMainGame {
     private ZombieLevel level;
     private ZombieMode mode;
     private ZombieTitle title;
+    private ZombieKeyBinds keys;
+    private boolean hasControl;
+    private int frameCounter;
     // TODO: get other values. These are just for testing.
     private Player player = new Player(new Point(100, 100), (float) 5.0, 3,
             (float) 1.5, (float) 1.0);
     // TODO: implement pending completion of zombie class.
     private List<ZombiePlaceholder> zombies;
     
-    // Key states variables use wrappers so they can be passed by reference.
-    private Boolean up;
-    private Boolean down;
-    private Boolean left;
-    private Boolean right;
-    private Boolean run;
-    private Boolean action;
-    private Boolean esc;
-    private Boolean accept;
+    // A hash map of key states booleans for the inputs.
+    private Map<String, Boolean> input;
     
     /**
      * ZombieMainGame's default constructor.
      */
     public ZombieMainGame() {
-        up = down = left = right = run = action = esc = accept = false;
+        hasControl = false;
+        
+        input = new HashMap<String, Boolean>();
+        input.put("up", false);
+        input.put("down", false);
+        input.put("left", false);
+        input.put("right", false);
+        input.put("run", false);
+        input.put("action", false);
+        input.put("escape", false);
+        input.put("accept", false);
+        
         mode = ZombieMode.TITLE;
+        
+        frameCounter = 1;
         
         // Create and start the game clock.
         ActionListener gameClock = new ActionListener() {
@@ -79,8 +87,12 @@ public class ZombieMainGame {
      * on the timer goes in here.
      */
     private void frameUpdate() {
+        // Update the frame counter.
+        frameCounter = (frameCounter + 1 > FPS ? 1 : frameCounter++);
+        
+        // Call the right method depending on the game mode.
         if (mode == ZombieMode.TITLE) {
-            // If in title screen.
+            titleHelper();
         } else if (mode == ZombieMode.PAUSED) {
             // If paused.
         } else {
@@ -109,10 +121,37 @@ public class ZombieMainGame {
      * Hands over primary control from ZombieHouse to ZombieMainGame. Called by
      * ZombieHouse's main method after completing its initialization routines.
      */
-    public void takeControl() {
+    public void takeControl() {    
+        linkToKeyBinds();
+        hasControl = true;
         // TODO: test code.
         // Show the title screen.
         showTitle();
+    }
+    
+    /**
+     * Updates the input map based on the provided input. Called by key binds.
+     * 
+     * @param str String representation of the key state change.
+     */
+    public void updateInput(String str) {
+        boolean state = (str.startsWith("released") ? false : true);
+        String key = (state ? str : str.substring(10));
+        input.put(key, state);
+        assert(input.get(key) == state);
+    }
+    
+    /**
+     * A helper method to handle keyboard input on the title screen. Called
+     * each frame.
+     */
+    private void titleHelper() {
+        title.incrementTime();
+        System.out.println("test");
+        // Controls.
+        if (input.get("left") || input.get("right")) {
+            title.switchButton();
+        }
     }
     
     /**
@@ -145,6 +184,28 @@ public class ZombieMainGame {
     }
     
     /**
+     * Links the main game controller with an instance of ZombieKeyBinds. The
+     * frame must already be set.
+     */
+    public void linkToKeyBinds() {
+        try {
+            keys = frame.getKeyBinds();
+            keys.linkToMainGame(this);
+        } catch (NullPointerException ex) {
+            ex.printStackTrace();
+        }
+    }
+    
+    /**
+     * Getter for timer.
+     * 
+     * @return timer Main game timer.
+     */
+    public Timer getTimer() {
+        return timer;
+    }
+    
+    /**
      * Getter for frame.
      * 
      * @return frame ZombieFrame in which the game is displayed.
@@ -160,6 +221,15 @@ public class ZombieMainGame {
      */
     public ZombieLevel getLevel() {
         return level;
+    }
+    
+    /**
+     * Getter for frameCounter.
+     * 
+     * @return frameCounter Number of frames elapsed this second.
+     */
+    public int getFrameCounter() {
+        return frameCounter;
     }
     
     /**

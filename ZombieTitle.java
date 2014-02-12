@@ -23,9 +23,6 @@ import javax.swing.*;
  * @group Mario LoPrinzi
  */
 public class ZombieTitle extends JPanel {
-    /**
-     * Eclipse made me.
-     */
     private static final long serialVersionUID = 1L;
     
     private Image titleBackground, startButtonPlain, startButtonSelected;
@@ -33,13 +30,19 @@ public class ZombieTitle extends JPanel {
     
     private String selected;
     
+    private long hours;
+    private long mins;
+    private long secs;
+    
     /**
      * Default constructor.
      */
     public ZombieTitle() {
         super(new BorderLayout());
+        hours = 1;
+        mins = 0;
+        secs = 0;
         setBackground(Color.BLACK);
-        setFocusable(false);
         // Get the images.
         try {
             titleBackground = new ImageIcon(this.getClass().getResource(
@@ -59,10 +62,58 @@ public class ZombieTitle extends JPanel {
     }
     
     /**
+     * Increments the time since infection display counters.
+     */
+    public void incrementTime() {
+        // Seconds -> minutes.
+        if (++secs >= 60) {
+            secs = 0;
+            ++mins;
+        } else {
+            ++secs;
+        }
+        // Minutes -> hours.
+        if (mins >= 60) {
+            mins = 0;
+            ++hours;
+        }
+    }
+    
+    /**
+     * Converts the time since infection display counters to a string.
+     * 
+     * @return time String representation of the current timers.
+     */
+    private String getTime() {
+        StringBuilder time = new StringBuilder("");
+        
+        // Hours.
+        if (hours < 10) {
+            time.append("0");
+        }
+        time.append(hours);
+        time.append(":");
+        // Minutes.
+        if (mins < 10) {
+            time.append("0");
+        }
+        time.append(mins);
+        time.append(":");
+        // Seconds.
+        if (secs < 10) {
+            time.append("0");
+        }
+        time.append(secs);
+        
+        return time.toString();
+    }
+    
+    /**
      * Toggles which button is selected.
      */
     public void switchButton() {
         selected = (selected == "start" ? "exit" : "start");
+        repaint();
     }
     
     /**
@@ -75,22 +126,27 @@ public class ZombieTitle extends JPanel {
     }
     
     /**
-     * Override of paint for actually drawing the image.
+     * Override of paintComponent for actually drawing the image.
      * 
      * @param g Graphics device on which to do the drawing; provided by system.
      */
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        Graphics2D graph = (Graphics2D) g;
-        graph.drawImage(titleBackground, 0, 0, null);
+        System.out.println("selected = " + selected);
+        g.drawImage(titleBackground, 0, 0, null);
+        
+        
         if (selected == "start") {
-            graph.drawImage(startButtonSelected, 360, 450, null);
-            graph.drawImage(exitButtonPlain, 920, 450, null);
+            g.drawImage(startButtonSelected, 360, 450, null);
+            g.drawImage(exitButtonPlain, 920, 450, null);
         } else {
-            graph.drawImage(startButtonPlain, 360, 450, null);
-            graph.drawImage(exitButtonSelected, 920, 450, null);
+            g.drawImage(startButtonPlain, 360, 450, null);
+            g.drawImage(exitButtonSelected, 920, 450, null);
         }
+        
+        g.setColor(Color.GREEN);
+        g.drawString("time since infection: " + getTime(), 380, 550);
     }
 
     /**
