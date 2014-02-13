@@ -1,22 +1,33 @@
 <levels>
-  <house width="100" length="40" exit="east"> 
-    <wall x="1" y1="1" y2="5"/>
-    <wall y1="7" y2="9" x="2"/>
-    <wall y="4" x1="0" x2="1"/>
-  
-    <obj x1="6" x2="6" y1="6" y2="6"/>
-    <obj x1="7" y1="2" x2="8" y2="3"/>
-  
+  <house width="40" length="40" exit="west">
+    <wall y="4" x1="1" x2="11"/>
+    <wall x="11" y1="1" y2="3"/>
+    <wall x="21" y1="1" y2="4"/>
+    <wall y="6" x1="21" x2="38"/>
+    <wall x="17" y1="8" y2="13"/>
+    <wall y="14" x1="8" x2="17"/>
+    <wall y="23" x1="1" x2="13"/>
+    <wall y="27" x1="20" x2="38"/>
+    <wall x="26" y1="23" y2="26"/>
+    <wall x="17" y1="33" y2="38"/>
+    <wall y="35" x1="6" x2="16"/>
+    <wall y="33" x1="26" x2="32"/>
+    <obj x1="26" y1="2" x2="26" y2="2"/>
+    <obj x1="4" y1="8" x2="10" y2="10"/>
+    <obj x1="26" y1="9" x2="29" y2="10"/>
+    <obj x1="18" y1="17" x2="31" y2="20"/>
+    <obj x1="30" y1="24" x2="30" y2="24"/>
+    <obj x1="4" y1="30" x2="6" y2="32"/>
+    <obj x1="5" y1="18" x2="5" y2="18"/>
+    <firetrap x="32" y="5"/>
+    <firetrap x="12" y="13"/>
+    <firetrap x="21" y="26"/>
+    <firetrap x="11" y="34"/>
+    <zombie x="5" y="2" smell="28" speed="0.1" randomwalk="90%:5%"/>
+    <zombie x="5" y="6" smell="10" speed="0.2" randomwalk="100%:25%"/>
+    <zombie x="29" y="13" smell="28" speed="0.1" randomwalk="90%:5%"/>
+    <zombie x="8" y="26" smell="10" speed="0.2" randomwalk="100%:25%"/>
+    <zombie x="16" y="30" smell="28" speed="0.1" randomwalk="90%:5%"/>
     <player sight="5" hear="20" speed="1" stamina="15" regen=".1"/>
-  
-    <zombie x="3" y="4" smell="8" speed="0.3" randomwalk="0%:0%"/>
-    <zombie x="3" y="5" smell="28" speed="0.1" randomwalk="90%:5%"/>
-    <zombie x="8" y="5" smell="10" speed="0.2" randomwalk="100%:25%"/>
-  
-    <wall x="2" y1="7" y2="9"/>
-  
-    <obj x1="6" x2="6" y1="6" y2="6"/>
-  
-    <zombie x="2" y="7" smell="15" speed="1" linewalk="98%:90%"/>
   </house>
 </levels>
