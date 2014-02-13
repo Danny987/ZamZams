@@ -21,13 +21,16 @@ public class House {
 	private int exit_Y = 0;
 
 	//minimum distance from the exit
-	private int exitDistance = 0;
+	private float exitDistance = 0;
 
 	//list of zombie objects
 	ArrayList<Zombie> zombieList = new ArrayList<>();
 
 	//list of tile objects
 	ArrayList<Tile> tileList = new ArrayList<>();
+	
+	//create player
+	Player player;
 
 	Random rand = new Random();
 
@@ -236,9 +239,9 @@ public class House {
 		return true;
 	}
 
-	public boolean createPlayer(int sight, int hear, float speed, int stamina,
-			float regen) {
+	public boolean createPlayer(float sight, float hear, float speed, float stamina, float regen) {
 		this.exitDistance = sight*2;
+		player = new Player(sight, hear, speed, stamina,regen);
 		return true;
 	}
 
@@ -430,6 +433,9 @@ public class House {
 			player_Y = playerPoint.y;
 			exit_X = exitPoint.x;
 			exit_Y = exitPoint.y;
+			
+			//set position in player object
+			player.setPosition(playerPoint);
 
 			//update the tile array with the exit and player
 			tileLayout[exitPoint.x][exitPoint.y].setTile('E', 1, 1, exitPoint.x, exitPoint.y);
@@ -511,7 +517,7 @@ public class House {
 		System.out.println("  Length: " + houseLength);
 		System.out.println("  Exit Wall: " + exitWall);
 		System.out.println("  Exit X: " + exit_X + " Exit Y: " + exit_Y);
-		System.out.println("  Player X: " + player_X + " Player Y: " + player_Y);
+		System.out.println("  Player Position: " + player.position);
 	}
 
 	//convert the tile array to chars and print it to the console
