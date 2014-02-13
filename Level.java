@@ -71,7 +71,13 @@ public class Level{
 			if(!houseList.get(i).setZombiePositions())
 			{
 				errorFlag = 1;
-				errorString = "Couoldn't place 'zombie' in house " + i + ".";
+				errorString = "Couldn't place 'zombie' in house " + i + ".";
+				return;
+			}
+			if(!houseList.get(i).setPlayerExit())
+			{
+				errorFlag = 1;
+				errorString = "No valid Player/exit path in house " + i + ".";
 				return;
 			}
 		}
