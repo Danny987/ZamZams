@@ -8,6 +8,8 @@ abstract class Character
   protected final int FRAMERATE = 30;
   protected float speed;
   protected float hear;
+  protected boolean objectCollision = false, trapCollision = false,
+      exitCollision = false;
   protected Rectangle hitbox = new Rectangle();
   protected Rectangle moveBox = new Rectangle();
   protected Point position = new Point();
@@ -21,18 +23,26 @@ abstract class Character
     return this.position;
   }
 
-  public void buildMap(char[][] houseLayout, ArrayList<Zombie> zombieList)
+  /**
+   * A setter method for the point ( in pixels ) of the player.
+   * */
+  public void setPosition(Point p)
+  {
+    this.position = new Point(p);
+  }
+
+  public void buildMap(ArrayList<Tile> houseLayout, ArrayList<Zombie> zombieList)
   {
     cMap.BuildcollisionMap(houseLayout, zombieList);
   }
 
   int collision(CollisionMap map, int leftRight, int upDown)
   {
-    // 0 = free movement
-    // 1 = wall or object in way
-    // 2 = zombie collision, player dead
-    // 3 = door collision, player win
-    // 4 = fire trap
+    // 1 = zombie collision, player dead
+    exitCollision = false;
+    trapCollision = false;
+    objectCollision = false;
+
     moveBox.setBounds(hitbox);
     if (leftRight == 1 && upDown == 0)
     {
@@ -81,32 +91,33 @@ abstract class Character
           (int) (moveBox.y + speed * TILE / FRAMERATE));
     }
 
-    for (CollisionObject cObj : map.getCollisionMap())
+    for (Zombie zombie : map.getZombieMap())
+    {
+      if (zombie.getHitbox().intersects(moveBox))
+      {
+        return 1;
+      }
+    }
+
+    for (Tile cObj : map.getCollisionMap())
     {
       if (cObj.getHitbox().intersects(this.moveBox))
       {
-        if (cObj.getTileType() == 'W')
+        if (cObj.getChar() == 'E')
         {
-          return 1;
+          exitCollision = true;
         }
-        else if (cObj.getTileType() == 'D')
+        if (cObj.getChar() == 'F')
         {
-          return 3;
+          trapCollision = true;
         }
-        else if (cObj.getTileType() == 'F')
+        if (cObj.getChar() != 'E' && cObj.getChar() != 'F')
         {
-          return 4;
+          objectCollision = true;
         }
+
       }
 
-    }
-
-    for (Zombie cObj : map.getZombieMap())
-    {
-      if (cObj.getHitbox().intersects(moveBox))
-      {
-        return 2;
-      }
     }
 
     return 0;

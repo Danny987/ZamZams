@@ -31,4 +31,5 @@ public class Zombie extends Character
   {
     return this.hitbox;
   }
+
 }
