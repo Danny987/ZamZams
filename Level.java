@@ -190,12 +190,12 @@ public class Level{
 		
 
 		//if we got here, create player
-		/*if(!houseList.get(houseNumber).createPlayer(sight, hear, speed, stamina, regen)
+		if(!houseList.get(houseNumber).createPlayer(sight, hear, speed, stamina, regen))
 		{
 			errorFlag = 1;
 			errorString = "Could not place 'player' in house " + houseNumber + ".";
 			return false;
-		}*/
+		}
 		return true;
 	}
 
