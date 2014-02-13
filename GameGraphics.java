@@ -2,6 +2,8 @@
  * Marcos Lemus
  * The MonsterGraphics class will load images, texture all objects, handle animations and lighting.
  *
+ *To implement make new GameGraphics with arguments for width and height
+ *then call initHouse, takes House object and some int, 0 for now.
  **************************************/
 
 import java.awt.Color;
@@ -35,8 +37,6 @@ public class GameGraphics extends JPanel {
   public List<Shape> shapes = new ArrayList<>();
   public List<LightSource> lightSources = new ArrayList<>();
   
-  private LightSource redLight;
-
   private House house;
 
   private BufferedImage sprites;
@@ -50,7 +50,11 @@ public class GameGraphics extends JPanel {
   }
 
   public GameGraphics(int width, int height) {
-    // redLight = new LightSource(new Color(255, 0, 0, 150));
+    LightSource player = new LightSource(Color.RED);
+    LightSource fire = new LightSource(Color.ORANGE);
+    lightSources.add(player);
+    lightSources.add(fire);
+    
     setSize(width, height);
   }
 
@@ -171,6 +175,17 @@ public class GameGraphics extends JPanel {
     Rectangle2D box;
     int x, y, width, height;
     charactersGraphics.setColor(Color.RED);
+    
+    for(Tile t: house.tileList){
+      box = t.getHitbox();
+      x = (int)box.getX();
+      y = (int)box.getY();
+      width = (int) box.getWidth();
+      height = (int) box.getHeight();
+      
+      backgroundGraphics.fillRect(x, y, width, height);
+    }
+    
     for(Zombie z: zombies){
       box = z.getHitbox();
       x = (int)box.getX();
