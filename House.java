@@ -38,6 +38,15 @@ public class House {
 				tileLayout[x][y] = new Tile('.',1,1,x,y);  // create each actual tile
 		}
 	}
+	
+	//setter and getters
+	public int getHouseWidth() {
+		return houseWidth;
+	}
+
+	public int getHouseLength() {
+		return houseLength;
+	}
 
 	//sets the basic properties of the house
 	//houseNumber = nth house in config file
