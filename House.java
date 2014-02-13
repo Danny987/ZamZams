@@ -274,13 +274,13 @@ public class House {
 				int r = rand.nextInt(tileList.size()+1);
 
 				//set zombie in houselayout
-				tileLayout[tileList.get(r).x][tileList.get(r).y].setTile('Z', 1, 1, tileList.get(r).x, tileList.get(r).y);
+				//tileLayout[tileList.get(r).x][tileList.get(r).y].setTile('Z', 1, 1, tileList.get(r).x, tileList.get(r).y);
 
 				//set position in zombie object
 				zombieList.get(i).setPosition(tileList.get(r));
 			}
 			//if the zombie had an x and y
-			tileLayout[position.x][position.y].setTile('Z', 1, 1, position.x, position.y);
+			//tileLayout[position.x][position.y].setTile('Z', 1, 1, position.x, position.y);
 		}
 		return true;
 	}
@@ -433,7 +433,7 @@ public class House {
 
 			//update the tile array with the exit and player
 			tileLayout[exitPoint.x][exitPoint.y].setTile('E', 1, 1, exitPoint.x, exitPoint.y);
-			tileLayout[playerPoint.x][playerPoint.y].setTile('P', 1, 1, playerPoint.x, playerPoint.y);
+			//tileLayout[playerPoint.x][playerPoint.y].setTile('P', 1, 1, playerPoint.x, playerPoint.y);
 
 			//add exit to tile obj list
 			tileList.add(new Tile('E',1 ,1, exit_X, exit_Y));
@@ -514,14 +514,25 @@ public class House {
 		System.out.println("  Player X: " + player_X + " Player Y: " + player_Y);
 	}
 
-	//draw the house layout array
-	public void drawHouse()
+	//convert the tile array to chars and print it to the console
+	public void drawHouse(boolean showPlayer, boolean showZombies)
 	{
+		char[][] houseLayout = new char[100][100];
+		for(int y = 0; y < houseLength; y++)
+			for(int x = 0; x < houseWidth; x++)
+				houseLayout[x][y] = tileLayout[x][y].getChar();
+		
+		houseLayout[player_X][player_Y] = 'P';
+		
+		for(int i = 0; i < zombieList.size(); i++)
+		{
+			houseLayout[zombieList.get(i).getPosition().x][zombieList.get(i).getPosition().y] = 'Z';
+		}
+		
 		for(int y = 0; y < houseLength; y++)
 		{
 			for(int x = 0; x < houseWidth; x++)
-				System.out.print(tileLayout[x][y].getChar());
-
+				System.out.print(houseLayout[x][y]);
 			System.out.print("\n");
 		}
 	}
