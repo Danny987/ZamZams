@@ -10,23 +10,26 @@ public class GraphicsTestFrame extends JFrame implements MouseMotionListener, Ke
   private LightSource light;
 
   public GraphicsTestFrame() {
-    setSize(500, 500);
-    game = new GameGraphics(500, 500);
+    setSize(1300, 700);
+    game = new GameGraphics(1000, 700);
 
-    int[][] fakeMap = { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-                        { 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0 },
-                        { 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0 } ,
-                        { 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0 } ,
-                        { 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0 } ,
-                        { 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0 } ,
-                        { 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0 } ,
-                        { 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0 } ,
-                        { 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0 } ,
-                        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }};
+    int[][] fakeMap = { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+                        { 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0 },
+                        { 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0 } ,
+                        { 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0 } ,
+                        { 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0 } ,
+                        { 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0 } ,
+                        { 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0 } ,
+                        { 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0 } ,
+                        { 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0 } ,
+                        { 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0 } ,
+                        { 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0 } ,
+                        { 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0 } ,
+                        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }};
 
     
     game.initMap(fakeMap, GameGraphics.GameImage.FLOOR1);
-    light = new LightSource(Color.GREEN);
+    light = new LightSource(new Color(0, 0, 155, 150));
     game.drawImage(null, null, null, new Point(250, 250), light);
     this.add(game);
     this.addMouseMotionListener(this);
@@ -46,6 +49,9 @@ public class GraphicsTestFrame extends JFrame implements MouseMotionListener, Ke
     int x = arg0.getX();
     int y = arg0.getY();
 
+    GameGraphics.GameImage.PLAYER.x = x;
+    GameGraphics.GameImage.PLAYER.y = y;
+    
     game.drawImage(null, null, null, new Point(x, y), light);
   }
   

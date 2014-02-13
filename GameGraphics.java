@@ -35,6 +35,10 @@ public class GameGraphics extends JPanel {
 
   public enum GameImage {
     PLAYER, ZOMBIE, FIRE, FLOOR1, FLOOR2, FLOOR3, WALL, SMALLOBJECT, LARGEOBJECT;
+    
+//    LightSource light;
+    int x = 500, y = 500;
+    int column, row;
   }
 
   public enum Animation {
@@ -46,7 +50,7 @@ public class GameGraphics extends JPanel {
   }
 
   public GameGraphics(int width, int height) {
-    redLight = new LightSource(Color.RED);
+//    redLight = new LightSource(new Color(255, 0, 0, 150));
     setSize(width, height);
   }
 
@@ -77,6 +81,7 @@ public class GameGraphics extends JPanel {
       backgroundGraphics = background.createGraphics();
       charactersGraphics = characters.createGraphics();
       lightsGraphics = lights.createGraphics();
+      
     }
 
     BufferedImage foo = null;
@@ -85,10 +90,11 @@ public class GameGraphics extends JPanel {
 
     for (int x = 0; x < mapWidth; x++) {
       for (int y = 0; y < mapHeight; y++) {
-        if(mapLayout[y][x] != floorTile){
-          redLight.addShapes(new Rectangle2D.Float(50*x, 50*y, 50, 50));
-        }
+//        if(mapLayout[y][x] != floorTile){
+//          redLight.addShapes(new Rectangle2D.Float(50*x, 50*y, 50, 50));
+//        }
         
+//        redLight.changePosition(100, 250);
         
         if (mapLayout[y][x] == wall) {
           
@@ -147,7 +153,9 @@ public class GameGraphics extends JPanel {
   public boolean drawImage(GameImage image, Animation animation, Direction direction, Point point, LightSource light) {
     // charactersGraphics.drawImage(null, point.x, point.y, null);
     // charactersGraphics.fillRect(point.x, point.y, 10, 10);
-    light.update(point.x, point.y, lightsGraphics);
+	light.init();
+    light.changePosition(point.x, point.y);
+    lights = light.updateLightmap();
     repaint();
     return false;
   }
@@ -161,7 +169,40 @@ public class GameGraphics extends JPanel {
 
   @Override
   public void paint(Graphics g) {
-    g.drawImage(background, 0, 0, null);
+    int backgroundX, backgroundY;
+    int charactersX, charactersY;
+    backgroundY = backgroundX = 0;
+    
+    // Center player on screen
+    if(this.getWidth() > background.getWidth()){
+      backgroundX = (this.getWidth() - background.getWidth()) / 2;
+    }
+    else{
+      int xDisp = GameImage.PLAYER.x - characters.getWidth()/2 + 200;
+      
+      backgroundX = -xDisp;
+      if(background.getWidth() + backgroundX < this.getWidth()){
+        backgroundX = this.getWidth() - background.getWidth();
+      }
+      else if(backgroundX > 0) backgroundX = 0;
+    }
+    
+    if(this.getHeight() > background.getHeight()){
+      backgroundY = (this.getHeight() - background.getHeight()) / 2;
+    }
+    else{
+      int yDisp = GameImage.PLAYER.y - characters.getHeight()/2 + 222;
+      
+      backgroundY = -yDisp;
+      if(background.getHeight() + backgroundY < this.getHeight()){
+        backgroundY = this.getHeight() - background.getHeight();
+      }
+      else if(backgroundY > 0) backgroundY = 0;
+    }    
+    
+    g.setColor(Color.BLACK);
+    g.fillRect(0, 0, this.getWidth(), this.getHeight());
+    g.drawImage(background, backgroundX, backgroundY, null);
     g.drawImage(characters, 0, 0, null);
     g.drawImage(lights, 0, 0, null);
   }
