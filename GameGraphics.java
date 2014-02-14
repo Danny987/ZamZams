@@ -36,11 +36,11 @@ public class GameGraphics extends JPanel {
 
   public List<Shape> shapes = new ArrayList<>();
   public List<LightSource> lightSources = new ArrayList<>();
-  
+
   private House house;
 
   private BufferedImage sprites;
-  
+
   public enum Animation {
     WALKING, STANDING
   }
@@ -54,7 +54,7 @@ public class GameGraphics extends JPanel {
     LightSource fire = new LightSource(Color.ORANGE);
     lightSources.add(player);
     lightSources.add(fire);
-    
+
     setSize(width, height);
   }
 
@@ -143,25 +143,25 @@ public class GameGraphics extends JPanel {
         backgroundGraphics.drawImage(sprite, 50 * x, 50 * y, null);
       }
     }
-    for(Tile tile: house.tileList){
-//      if(tile.getChar() == tile.)
+    for (Tile tile : house.tileList) {
+      // if(tile.getChar() == tile.)
     }
     return true;
   }
-  
-  public void explode(ZombieTrap trap){
-    //get which fire trap is going to explode and check around it.
+
+  public void explode(ZombieTrap trap) {
+    // get which fire trap is going to explode and check around it.
   }
 
-//  public boolean drawImage() {
-//    // charactersGraphics.drawImage(null, point.x, point.y, null);
-//    // charactersGraphics.fillRect(point.x, point.y, 10, 10);
-//    light.init();
-//    light.changePosition(point.x, point.y);
-//    lights = light.updateLightmap();
-//    repaint();
-//    return false;
-//  }
+  // public boolean drawImage() {
+  // // charactersGraphics.drawImage(null, point.x, point.y, null);
+  // // charactersGraphics.fillRect(point.x, point.y, 10, 10);
+  // light.init();
+  // light.changePosition(point.x, point.y);
+  // lights = light.updateLightmap();
+  // repaint();
+  // return false;
+  // }
 
   private boolean loadImages() throws MissingResourceException, IOException {
     sprites = ImageIO.read(new File("sprites.png"));
@@ -170,40 +170,38 @@ public class GameGraphics extends JPanel {
     return false;
   }
 
-  public void update(){
+  public void update() {
     List<Zombie> zombies = house.zombieList;
     Rectangle2D box;
     int x, y, width, height;
     charactersGraphics.setColor(Color.RED);
-    
-    for(Tile t: house.tileList){
-      box = t.getHitbox();
-      x = (int)box.getX();
-      y = (int)box.getY();
-      width = (int) box.getWidth();
-      height = (int) box.getHeight();
-      
+
+    backgroundGraphics.setColor(Color.BLUE);
+    for (Tile t : house.tileList) {
+      x = (int) t.getX() * 50;
+      y = (int) t.getY() * 50;
+      width = (int) t.getWidth() * 50;
+      height = (int) t.getHeight() * 50;
+//      System.out.println("Position("+ x + ", " + y+") , Width: " + width + "Height: " + height);
       backgroundGraphics.fillRect(x, y, width, height);
     }
-    
-    for(Zombie z: zombies){
+
+    charactersGraphics.setColor(Color.RED);
+    for (Zombie z : zombies) {
       box = z.getHitbox();
-      x = (int)box.getX();
-      y = (int)box.getY();
-      width = (int)box.getWidth();
-      height = (int)box.getHeight();
+      x = (int) box.getX();
+      y = (int) box.getY();
       charactersGraphics.fillRect(x, y, 50, 50);
     }
-    
+
     Point p = house.player.getPosition();
     x = p.x;
     y = p.x;
     charactersGraphics.setColor(Color.GREEN);
     charactersGraphics.fillRect(x, y, 50, 50);
-    
     repaint();
   }
-  
+
   @Override
   public void paint(Graphics g) {
     int backgroundX, backgroundY;
@@ -242,6 +240,6 @@ public class GameGraphics extends JPanel {
     g.fillRect(0, 0, this.getWidth(), this.getHeight());
     g.drawImage(background, backgroundX, backgroundY, null);
     g.drawImage(characters, backgroundX, backgroundY, null);
-    g.drawImage(lights, backgroundX, backgroundY, null);
+    // g.drawImage(lights, backgroundX, backgroundY, null);
   }
 }

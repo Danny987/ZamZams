@@ -125,15 +125,15 @@ public class House {
 						//add it the obj array
 						tileLayout[x][y].setTile('S', width, height,x,y);
 						//add it to the obj list
-						tileList.add(new Tile('S', width, height,x,y));
+						tileList.add(new Tile('S', width+1, height+1,x,y));
 					}
 					else if(area > 9){
 						tileLayout[x][y].setTile('L', width, height,x,y);
-						tileList.add(new Tile('L', width, height,x,y));
+						tileList.add(new Tile('L', width+1, height+1,x,y));
 					}
 					else{
 						tileLayout[x][y].setTile('M', width, height,x,y);
-						tileList.add(new Tile('M', width, height,x,y));
+						tileList.add(new Tile('M', width+1, height+1,x,y));
 					}
 				}
 				else{
@@ -190,7 +190,7 @@ public class House {
 					//add the wall to the obj array
 					tileLayout[c1][y].setTile('V',1,length,c1,y);
 					//add the wall to the obj list
-					tileList.add(new Tile('V',1,length,c1,y));
+					tileList.add(new Tile('V',1,length + 1,c1,y));
 				}
 				else
 				{
@@ -215,8 +215,8 @@ public class House {
 			{
 				if(x == low)
 				{
-					tileLayout[x][c1].setTile('H',1,length, x, c1);
-					tileList.add(new Tile('H',1,length, x, c1));
+					tileLayout[x][c1].setTile('H',length,1, x, c1);
+					tileList.add(new Tile('H',length + 1,1, x, c1));
 				}
 				else
 				{
@@ -527,6 +527,19 @@ public class House {
 	public void drawHouse(boolean showPlayer, boolean showZombies)
 	{
 		char[][] houseLayout = new char[100][100];
+		for(int y = 0; y < 100; y++)
+		{
+			for(int x = 0; x < 100; x++)
+				houseLayout[x][y] = '.';
+		}
+		
+		for(int i = 0; i < tileList.size(); i++)
+		{
+			houseLayout[tileList.get(i).getX()][tileList.get(i).getY()] = tileList.get(i).getChar();
+			System.out.print(tileList.get(i).getChar() +" x:" + tileList.get(i).getX() + " y:" + tileList.get(i).getY());
+			System.out.print(" w:" + tileList.get(i).getWidth() + " h:" + tileList.get(i).getHeight() + "\n");
+		}
+		
 		for(int y = 0; y < houseLength; y++)
 			for(int x = 0; x < houseWidth; x++)
 				houseLayout[x][y] = tileLayout[x][y].getChar();
