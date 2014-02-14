@@ -13,6 +13,7 @@ import java.util.*;
 import java.awt.Container;
 import java.awt.Point;
 import java.awt.event.*;
+
 import javax.swing.Timer;
 
 /**
@@ -33,17 +34,19 @@ public class ZombieMainGame {
     
     private Timer timer;
     private ZombieFrame frame;
-    private ZombieLevel level;
+    private ZombieLevel zombieLevel;
     private ZombieMode mode;
     private ZombieTitle title;
     private ZombieKeyBinds keys;
+    private Level level;
     private boolean hasControl;
     private int frameCounter;
-    // TODO: get other values. These are just for testing.
-    private Player player = new Player(new Point(100, 100), (float) 5.0, 3,
-            (float) 1.5, (float) 1.0);
-    // TODO: implement pending completion of zombie class.
-    private List<ZombiePlaceholder> zombies;
+    
+    private int levelNum;
+    private long score;
+    private int maxLevel;
+    private Player player;
+    private ArrayList<Zombie> zombies;
     
     // A hash map of key states booleans for the inputs.
     private Map<String, Boolean> input;
@@ -65,6 +68,10 @@ public class ZombieMainGame {
         input.put("enter", false);
         
         mode = ZombieMode.TITLE;
+        
+        levelNum = 0;
+        score = 0;
+        maxLevel = 0;
         
         frameCounter = 1;
         
@@ -135,7 +142,47 @@ public class ZombieMainGame {
      */
     public void start() {
         // Start the game.
-        // mode = ZombieMode.PLAYING;
+        System.out.println("test");
+        mode = ZombieMode.PLAYING;
+        levelNum = 1;      
+        zombieLevel = new ZombieLevel(level.houseList.get(levelNum - 1));
+        player = zombieLevel.getHouse().player;
+        zombies = zombieLevel.getHouse().zombieList;
+        // Main game loop.
+        
+        // TEST
+        Tile[][] array = zombieLevel.getLayout();
+        for(int y = 0; y < array.length; y++)
+        {
+            for(int x = 0; x < array[y].length; x++)
+                System.out.print(array[x][y].getChar());
+            System.out.print("\n");
+        }
+        
+        while(mode != ZombieMode.TITLE) {
+            // TODO
+        }
+    }
+    
+    /**
+     * Restarts the current level.
+     */
+    public void restartLevel() {
+        // TODO
+    }
+    
+    /**
+     * Kills the player.
+     */
+    public void killPlayer() {
+        // TODO
+    }
+    
+    /**
+     * Ends the game and returns to tile.
+     */
+    public void gameOver() {
+        mode = ZombieMode.TITLE;
     }
     
     /**
@@ -246,6 +293,16 @@ public class ZombieMainGame {
         } catch (NullPointerException ex) {
             ex.printStackTrace();
         }
+    }
+    
+    /**
+     * Links the game controller with the level object containing all houses.
+     * 
+     * @param level Level to link with.
+     */
+    public void linkToLevel(Level level) {
+        this.level = level;
+        maxLevel = level.houseList.size();
     }
     
     /**

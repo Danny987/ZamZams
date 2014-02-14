@@ -43,6 +43,9 @@ public class House {
 	}
 	
 	//setter and getters
+	public Tile[][] getHouseLayout(){
+		return this.tileLayout;
+	}
 	public int getHouseWidth() {
 		return houseWidth;
 	}

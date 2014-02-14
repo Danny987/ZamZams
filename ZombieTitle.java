@@ -1,3 +1,11 @@
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Image;
+
+import javax.swing.ImageIcon;
+import javax.swing.JPanel;
+
 /**
  * ZombieHouse - a zombie survival game written in Java for CS 351.
  * 
@@ -8,10 +16,6 @@
  * Marcos Lemus
  * Mario LoPrinzi
  */
-
-import java.awt.*;
-
-import javax.swing.*;
 
 /**
  * ZombieTitle - ZombieHouse's title screen.

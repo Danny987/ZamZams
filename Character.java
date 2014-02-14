@@ -23,17 +23,31 @@ abstract class Character
     return this.position;
   }
 
+  public static CollisionMap getCollisionMap()
+  {
+    return cMap;
+  }
+
   /**
    * A setter method for the point ( in pixels ) of the player.
    * */
   public void setPosition(Point p)
   {
+    p.x *= 50;
+    p.y *= 50;
+    
     this.position = new Point(p);
+    this.getHitbox().setLocation(p);
   }
 
-  public void buildMap(ArrayList<Tile> houseLayout, ArrayList<Zombie> zombieList)
+  public void buildMap(House curHouse)
   {
-    cMap.BuildcollisionMap(houseLayout, zombieList);
+    cMap.BuildcollisionMap(curHouse);
+  }
+
+  public Rectangle getHitbox()
+  {
+    return this.hitbox;
   }
 
   int collision(CollisionMap map, int leftRight, int upDown)
@@ -43,7 +57,7 @@ abstract class Character
     trapCollision = false;
     objectCollision = false;
 
-    moveBox.setBounds(hitbox);
+    moveBox.setBounds(this.hitbox);
     if (leftRight == 1 && upDown == 0)
     {
       moveBox.setLocation((int) (moveBox.x - speed * TILE / FRAMERATE),
@@ -93,8 +107,10 @@ abstract class Character
 
     for (Zombie zombie : map.getZombieMap())
     {
+      System.out.println(zombie.getHitbox().toString());
       if (zombie.getHitbox().intersects(moveBox))
       {
+
         return 1;
       }
     }
