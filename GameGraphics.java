@@ -201,7 +201,6 @@ public class GameGraphics extends JPanel {
     charactersGraphics.setColor(Color.GREEN);
     charactersGraphics.fillRect(x, y, 50, 50);
     
-    repaint();
   }
   
   @Override

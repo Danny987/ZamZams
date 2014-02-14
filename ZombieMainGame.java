@@ -41,7 +41,6 @@ public class ZombieMainGame {
     private Level level;
     private boolean hasControl;
     private int frameCounter;
-    private GameGraphics graphics;
     
     private int levelNum;
     private long score;
@@ -115,7 +114,6 @@ public class ZombieMainGame {
                 break;
             case PLAYING:
                 // If playing.
-            	graphics.update();
                 break;
             default:
                 break;
@@ -148,13 +146,7 @@ public class ZombieMainGame {
         levelNum = 1;      
         zombieLevel = new ZombieLevel(level.houseList.get(levelNum - 1));
         player = zombieLevel.getHouse().player;
-        System.out.println(player.getPosition());
         zombies = zombieLevel.getHouse().zombieList;
-        
-        // Update the frame.
-        frame.setContentPane(graphics);
-        frame.pack();
-        
         // Main game loop.
         
         // TEST
@@ -165,7 +157,6 @@ public class ZombieMainGame {
                 System.out.print(array[x][y].getChar());
             System.out.print("\n");
         }
-        graphics.initHouse(zombieLevel.getHouse(), 0);
         
         while(mode != ZombieMode.TITLE) {
             // TODO
@@ -244,7 +235,6 @@ public class ZombieMainGame {
     private void titleHelper() {
         if (title != null) {
             // Controls. Uses the frame counter to space out button switches.
-            // TODO: make this smoother.
             if ((input.get("left") || input.get("right")) &&
                     frameCounter % 7 == 0) {
                 title.switchButton();
@@ -311,15 +301,6 @@ public class ZombieMainGame {
     public void linkToLevel(Level level) {
         this.level = level;
         maxLevel = level.houseList.size();
-    }
-    
-    /**
-     * Links the game controller with the graphics engine.
-     * 
-     * @param graphics GameGraphics to link with.
-     */
-    public void linkToGraphics(GameGraphics graphics) {
-    	this.graphics = graphics;
     }
     
     /**
