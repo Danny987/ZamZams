@@ -47,7 +47,7 @@ public class ZombieLevel {
      * @param layout 2-D Tile array representing the level's floor layout.
      */
     public ZombieLevel(House current) {
-        this.house = house;
+        this.house = current;
         int width = current.getHouseWidth();
         int length = current.getHouseLength();
         Tile[][] array = current.getHouseLayout();
