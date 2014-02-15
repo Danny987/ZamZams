@@ -215,8 +215,8 @@ public class House {
 			{
 				if(x == low)
 				{
-					tileLayout[x][c1].setTile('H',1,length, x, c1);
-					tileList.add(new Tile('H',1,length+1, x, c1));
+					tileLayout[x][c1].setTile('H', length, 1, x, c1);
+					tileList.add(new Tile('H',length+1, 1, x, c1));
 				}
 				else
 				{
