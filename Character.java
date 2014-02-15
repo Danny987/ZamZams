@@ -33,9 +33,6 @@ abstract class Character
    * */
   public void setPosition(Point p)
   {
-    p.x *= 50;
-    p.y *= 50;
-    
     this.position = new Point(p);
     this.getHitbox().setLocation(p);
   }
@@ -107,7 +104,7 @@ abstract class Character
 
     for (Zombie zombie : map.getZombieMap())
     {
-      // System.out.println(zombie.getHitbox().toString());
+
       if (zombie.getHitbox().intersects(moveBox))
       {
 
