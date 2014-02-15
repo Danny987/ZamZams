@@ -43,7 +43,6 @@ public class Player extends Character
     this.hear = hear;
     this.sight = sight;
     this.speed = speed;
-    this.hitbox = new Rectangle(position.x, position.y, 50, 50);
     this.staminaRegen = stamRegen;
   }
 
@@ -73,6 +72,11 @@ public class Player extends Character
   public void setFireTrapCount(int fireTrapCount)
   {
     this.fireTrapCount = fireTrapCount;
+  }
+
+  public boolean isInExit()
+  {
+    return this.exitCollision;
   }
 
   public float getHear()
@@ -153,7 +157,7 @@ public class Player extends Character
 
       // free movement
       this.position.x -= Math.round(TILE * moveSpeed / FRAMERATE);
-      this.hitbox = new Rectangle(position.x, position.y, 50, 50);
+      this.hitbox.setLocation(position.x + 5, position.y + 5);
       moveFlag = 1;
 
     }
@@ -163,7 +167,7 @@ public class Player extends Character
 
       // free movement
       this.position.x += Math.round(TILE * moveSpeed / FRAMERATE);
-      this.hitbox = new Rectangle(position.x, position.y, 50, 50);
+      this.hitbox.setLocation(position.x + 5, position.y + 5);
       moveFlag = 1;
 
     }
@@ -172,7 +176,7 @@ public class Player extends Character
 
       // free movement
       this.position.y -= Math.round(TILE * moveSpeed / FRAMERATE);
-      this.hitbox = new Rectangle(position.x, position.y, 50, 50);
+      this.hitbox.setLocation(position.x + 5, position.y + 5);
       moveFlag = 1;
 
     }
@@ -182,7 +186,7 @@ public class Player extends Character
 
       // free movement
       this.position.y += Math.round(TILE * moveSpeed / FRAMERATE);
-      this.hitbox = new Rectangle(position.x, position.y, 50, 50);
+      this.hitbox.setLocation(position.x + 5, position.y + 5);
       moveFlag = 1;
 
     }
@@ -194,7 +198,7 @@ public class Player extends Character
           / Math.sqrt(2));
       this.position.y -= Math.round((TILE * moveSpeed / FRAMERATE)
           / Math.sqrt(2));
-      this.hitbox = new Rectangle(position.x, position.y, 50, 50);
+      this.hitbox.setLocation(position.x + 5, position.y + 5);
       moveFlag = 1;
 
     }
@@ -206,7 +210,7 @@ public class Player extends Character
           / Math.sqrt(2));
       this.position.y += Math.round((TILE * moveSpeed / FRAMERATE)
           / Math.sqrt(2));
-      this.hitbox = new Rectangle(position.x, position.y, 50, 50);
+      this.hitbox.setLocation(position.x + 5, position.y + 5);
       moveFlag = 1;
 
     }
@@ -219,7 +223,7 @@ public class Player extends Character
           / Math.sqrt(2));
       this.position.y -= Math.round((TILE * moveSpeed / FRAMERATE)
           / Math.sqrt(2));
-      this.hitbox = new Rectangle(position.x, position.y, 50, 50);
+      this.hitbox.setLocation(position.x + 5, position.y + 5);
       moveFlag = 1;
 
     }
@@ -232,7 +236,7 @@ public class Player extends Character
           / Math.sqrt(2));
       this.position.y += Math.round((TILE * moveSpeed / FRAMERATE)
           / Math.sqrt(2));
-      this.hitbox = new Rectangle(position.x, position.y, 50, 50);
+      this.hitbox.setLocation(position.x + 5, position.y + 5);
       moveFlag = 1;
 
     }

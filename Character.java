@@ -14,6 +14,7 @@ abstract class Character
   protected Rectangle moveBox = new Rectangle();
   protected Point position = new Point();
   protected static CollisionMap cMap = new CollisionMap();
+  protected Point trapPosition = null;
 
   /**
    * A getter method for the point ( in pixels ) of the player.
@@ -21,6 +22,23 @@ abstract class Character
   public Point getPosition()
   {
     return this.position;
+  }
+
+  public boolean isOnTrap()
+  {
+    return trapCollision;
+  }
+
+  public Point getTrapPosition()
+  {
+    if (trapCollision)
+    {
+      return this.trapPosition;
+    }
+    else
+    {
+      return null;
+    }
   }
 
   public static CollisionMap getCollisionMap()
@@ -36,7 +54,7 @@ abstract class Character
     p.x *= 50;
     p.y *= 50;
     this.position = new Point(p);
-    this.getHitbox().setLocation(p);
+    this.getHitbox().setLocation(p.x + 5, p.y + 5);
   }
 
   public void buildMap(House curHouse)
@@ -125,6 +143,7 @@ abstract class Character
         if (cObj.getChar() == 'F')
         {
           trapCollision = true;
+          trapPosition = new Point(cObj.getX(), cObj.getY());
         }
         if (cObj.getChar() != 'E' && cObj.getChar() != 'F')
         {

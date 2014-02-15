@@ -11,7 +11,6 @@
 
 import java.util.*;
 import java.awt.Container;
-import java.awt.Point;
 import java.awt.event.*;
 
 import javax.swing.Timer;
@@ -27,11 +26,11 @@ import javax.swing.Timer;
  * @version 0.1
  */
 public class ZombieMainGame {
+	private final static boolean DEBUG = false;
+	
     // Main game timer.
     private static final int FPS = 30;
     private static final int DELAY = 1000/FPS;
-    // Tile size.
-    private static final int TILE = 50;
     
     private Timer timer;
     private ZombieFrame frame;
@@ -40,6 +39,7 @@ public class ZombieMainGame {
     private ZombieTitle title;
     private ZombieKeyBinds keys;
     private Level level;
+    private House house;
     private boolean hasControl;
     private int frameCounter;
     private GameGraphics graphics;
@@ -47,6 +47,7 @@ public class ZombieMainGame {
     private int levelNum;
     private long score;
     private int maxLevel;
+    private int tileSet;
     private Player player;
     private ArrayList<Zombie> zombies;
     
@@ -74,6 +75,7 @@ public class ZombieMainGame {
         levelNum = 0;
         score = 0;
         maxLevel = 0;
+        tileSet = 0;
         
         frameCounter = 1;
         
@@ -113,10 +115,11 @@ public class ZombieMainGame {
                 break;
             case PAUSED:
                 // If paused.
+            	pausedHelper();
                 break;
             case PLAYING:
                 // If playing.
-            	movementHelper();
+            	playingHelper();
             	if (graphics != null) {
             		graphics.update();
             	}
@@ -135,42 +138,67 @@ public class ZombieMainGame {
     public void startGame() {
         // Start the game.
         mode = ZombieMode.PLAYING;
+        maxLevel = level.houseList.size() - 1;
         levelNum = 0;
         score = 0;
         zombieLevel = new ZombieLevel(level.houseList.get(levelNum));
-        player = zombieLevel.getHouse().player;
-        player.buildMap(zombieLevel.getHouse());
-        zombies = zombieLevel.getHouse().zombieList;
+        house = zombieLevel.getHouse();
+        player = house.player;
+        player.buildMap(house);
+        zombies = house.zombieList;
         assert (player != null) : "player is null";
         assert (zombies != null) : "zombies is null";
         assert (zombieLevel != null) : "zombieLevel is null";
         
-        frame.startGraphics(zombieLevel.getHouse(), 0);
+        frame.startGraphics(house, tileSet);
         graphics = frame.getGameGraphics();
         graphics.update();
         
         // Main game loop.
         
-        // TEST
-        printCurrentLevel();
+        // DEBUG
+        if (DEBUG) {
+        	printCurrentLevel();
+        }
     }
     
     /**
      * Advances the level if there are more levels available.
      */
     public void nextLevel() {
-    	// TODO
+    	if (levelNum == maxLevel) {
+    		winGame();
+    	} else {
+    		zombieLevel = new ZombieLevel(level.houseList.get(++levelNum));
+    		house = zombieLevel.getHouse();
+    		player = house.player;
+    		player.buildMap(house);
+    		zombies = house.zombieList;
+    		graphics.changeHouse(house, tileSet);
+    		score += 1000;
+    	}
+    }
+    
+    /**
+     * Wins the game.
+     */
+    public void winGame() {
+    	// TODO: do win stuff.
+    	
+    	// End the game.
+    	gameOver();
     }
     
     /**
      * Restarts the current level.
      */
     public void restartLevel() {
-    	mode = ZombieMode.PAUSED;
         zombieLevel.revert();
-        // TODO: get revert methods for both.
+        // TODO: get revert methods for both. Will need to reinitialize when
+        // restarting the level or game.
         player = zombieLevel.getHouse().player;
         zombies = zombieLevel.getHouse().zombieList;
+        pause();
     }
     
     /**
@@ -181,11 +209,44 @@ public class ZombieMainGame {
     }
     
     /**
+     * Pause the game.
+     */
+    public void pause() {
+    	mode = ZombieMode.PAUSED;
+    	clearKeyBinds();
+    	// This sleep throttles the next frame update so that the key bind
+    	// doesn't immediately change back to pressed.
+    	try {
+    		Thread.sleep(500);
+    	} catch (InterruptedException ex) {
+    		ex.printStackTrace();
+    	}
+    }
+    
+    /**
+     * Unpause the game.
+     */
+    public void unpause() {
+    	mode = ZombieMode.PLAYING;
+    }
+    
+    /**
      * Ends the game and returns to tile.
      */
     public void gameOver() {
     	score = 0;
+    	levelNum = 0;
         mode = ZombieMode.TITLE;
+        frame.replace(title);
+        assert (frame.getContentPane().getComponent(0) == title);
+        // Throttle the return to the title screen so the key binds don't
+        // automatically reactivate.
+        try {
+        	Thread.sleep(500);
+        } catch (InterruptedException ex) {
+        	ex.printStackTrace();
+        }
+        clearKeyBinds();
     }
     
     /**
@@ -194,9 +255,11 @@ public class ZombieMainGame {
      */
     public void takeControl() {    
         linkToKeyBinds();
+        assert (keys != null);
         hasControl = true;
         // Show the title screen.
         showTitle();
+        assert (hasControl);
     }
     
     /**
@@ -230,17 +293,29 @@ public class ZombieMainGame {
                     break;
             }
         }
-        
         assert(input.get(key) == state);
     }
     
     /**
-     * A helper method for player movement. Converts key binding states into
-     * the format required by player.move.
+     * Sets all key binds to false.
      */
-    private void movementHelper() {
+    public void clearKeyBinds() {
+    	for (Map.Entry<String, Boolean> entry : input.entrySet()) {
+    		input.put(entry.getKey(), false);
+    		assert(!input.get(entry.getKey()));
+    	}
+    }
+    
+    /**
+     * A helper method for player movement and input. Converts key binding
+     * states into the format required by player.move.
+     */
+    private void playingHelper() {
     	boolean run = input.get("run");
     	int leftRight, upDown;
+    	// Score increases every frame. Certain other actions, such as killing
+    	// zombies and advancing to the next level, provide additional boosts.
+    	score++;
     	
     	// Left/right.
     	if (input.get("left")) {
@@ -258,9 +333,25 @@ public class ZombieMainGame {
     	} else {
     		upDown = 0;
     	}
+    	// Pause.
+    	if (input.get("escape")) {
+    		pause();
+    	}
     	
     	if (player != null) {
     		player.move(leftRight, upDown, run);
+    	}
+    }
+    
+    /**
+     * Paused helper.
+     */
+    public void pausedHelper() {
+    	// Pressing escape again quits the game. Pressing enter unpauses.
+    	if (input.get("enter")) {
+    		unpause();
+    	} else if (input.get("escape")) {
+    		gameOver();
     	}
     }
     
@@ -270,10 +361,16 @@ public class ZombieMainGame {
      */
     private void titleHelper() {
         if (title != null) {
-            // Controls. Uses the frame counter to throttle button switches.
-            if ((input.get("left") || input.get("right")) &&
-                    frameCounter % 7 == 0) {
+            // Controls.
+            if (input.get("left") || input.get("right")) {
+            	clearKeyBinds();
                 title.switchButton();
+                // Throttle input so it doesn't constantly switch.
+                try {
+                	Thread.sleep(200);
+                } catch (InterruptedException ex) {
+                	ex.printStackTrace();
+                }
             }
             if (input.get("enter") || input.get("action")) {
                 if (title.getSelected() == "start") {
@@ -292,8 +389,12 @@ public class ZombieMainGame {
      * Displays the title screen.
      */
     private void showTitle() {
-        title = new ZombieTitle();
-        title.setVisible(true);
+    	mode = ZombieMode.TITLE;
+    	if (title == null) {
+    		title = new ZombieTitle();
+    	}
+    	assert (title != null);
+    	
         while (frame == null) {
             try {
                 wait();
@@ -305,6 +406,7 @@ public class ZombieMainGame {
         content.add(title);
         frame.setContentPane(content);
         frame.repaint();
+        assert (frame.getContentPane().getComponent(0) == frame);
     }
     
     /**
@@ -338,6 +440,7 @@ public class ZombieMainGame {
     public void linkToLevel(Level level) {
         this.level = level;
         maxLevel = level.houseList.size();
+        assert maxLevel >= 1;
     }
     
     /**
@@ -347,6 +450,10 @@ public class ZombieMainGame {
         // Exit with error-free status.
         System.exit(0);
     }
+    
+    /**********************/
+    /* Debugging methods. */
+    /**********************/
     
     /**
      * A debugging method that prints out the input states.

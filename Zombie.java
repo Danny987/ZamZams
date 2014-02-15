@@ -19,7 +19,9 @@ public class Zombie extends Character
     this.walkType = walkType;
     this.probabiltyA = probabilityA;
     this.probablityB = probabilityB;
-    this.hitbox = new Rectangle((position.x)*50, (position.y)*50, 50, 50);
+    //multiply by 50 because the x and y are in tiles not pixels
+    //add 5 to center the box a bit because it isn't 50 by 50
+    this.hitbox = new Rectangle((position.x)*50+5, (position.y)*50+5, 40, 40);
   }
 
   public void setSmell(float adjustedSmell)

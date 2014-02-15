@@ -146,15 +146,4 @@ public class ZombieTitle extends JPanel {
         g.setColor(Color.GREEN);
         g.drawString("time since infection: " + getTime(), 380, 550);
     }
-
-    /**
-     * ZombieTitle's main method - used for testing.
-     * 
-     * @param args String array of command-line arguments.
-     */
-    public static void main(String[] args) {
-        // TODO Auto-generated method stub
-
-    }
-
 }
