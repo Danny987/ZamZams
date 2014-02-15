@@ -1,7 +1,9 @@
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 public class House {
@@ -294,7 +296,7 @@ public class House {
 
 
 	//This method finds a valid Exit and Player location
-	public boolean setPlayerExit()
+	public boolean setPlayerAndExit()
 	{
 		//map that will contain all possible combinations
 		//of valid exit and player locations. Exit = key, Player = value.
@@ -405,15 +407,23 @@ public class House {
 				}
 			}
 		}
+		
+		
+		
+		//check if there are no valid player tiles
+		int totalValidPlayerPoints = 0;
+		for (List<Point> list : validExits.values()) {
+			totalValidPlayerPoints += list.size();
+		}
 
 		//if we didn't add at least 1 set of points to the map, then the room is invalid
-		if(validExits.size() < 1)
+		if(validExits.size() < 1 || totalValidPlayerPoints < 1)
 		{
 			return false;
 		}
 		//we have valid locations, pick one at random
 		else
-		{
+		{	
 			//get the keys from the map, aka exit locations
 			List<Point> keys = new ArrayList<Point>(validExits.keySet());
 			//pick one of the keys at random, that will be the exit location
