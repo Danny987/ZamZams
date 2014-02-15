@@ -49,13 +49,13 @@ public class ZombieTitle extends JPanel {
             titleBackground = new ImageIcon(this.getClass().getResource(
                     "/images/title-screen.png")).getImage();
             startButtonPlain = new ImageIcon(this.getClass().getResource(
-                    "/images/start-button-plain.png")).getImage();
+                    "/images/start-button.png")).getImage();
             startButtonSelected = new ImageIcon(this.getClass().getResource(
-                    "/images/start-button-selected.png")).getImage();
+                    "/images/start-selected.png")).getImage();
             exitButtonPlain = new ImageIcon(this.getClass().getResource(
-                    "/images/exit-button-plain.png")).getImage();
+                    "/images/exit-button.png")).getImage();
             exitButtonSelected = new ImageIcon(this.getClass().getResource(
-                    "/images/exit-button-selected.png")).getImage();
+                    "/images/exit-selected.png")).getImage();
         } catch (NullPointerException ex) {
             System.err.println("Error: title screen resources not found.");
         }

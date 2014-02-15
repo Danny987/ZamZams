@@ -76,6 +76,10 @@ public class ZombieFrame extends JFrame {
                 graphics.setFullScreenWindow(this);
                 // Having gone full screen, retrieve the display size.
                 size = Toolkit.getDefaultToolkit().getScreenSize();
+                // This double-switching of setVisible is to fix a bug with full-screen-
+                // exclusive mode on OS X. Versions 10.8 and later don't send keyboard
+                // events properly without it.
+                setVisible(false);
             } catch (HeadlessException ex) {
                 System.err.println("Error: primary display not set or found. "
                     + "Your experience of life may be suboptimal.");
@@ -88,20 +92,7 @@ public class ZombieFrame extends JFrame {
             setExtendedState(Frame.MAXIMIZED_BOTH);
             size = getSize();
         }
-        // This double-switching of setVisible is to fix a bug with full-screen-
-        // exclusive mode on OS X. Versions 10.8 and later don't send keyboard
-        // events properly without it.
-        setVisible(false);
         setVisible(true);
-	}
-	
-	/**
-	 * Getter for size.
-	 * 
-	 * @return Dimension object containing the full-screen window size.
-	 */
-	public Dimension getSize() {
-	    return size;
 	}
 	
 	/**
@@ -113,4 +104,13 @@ public class ZombieFrame extends JFrame {
 	    return keys;
 	}
 	
+	/**
+	 * Override of getSize.
+	 * 
+	 * @return Size of frame.
+	 */
+	@Override
+	public Dimension getSize() {
+		return size;
+	}
 }

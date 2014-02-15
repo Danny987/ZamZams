@@ -86,8 +86,8 @@ public class ZombieMainGame {
         };
         // The FPS is set to 30, but this is a little misleading. Since the
         // timer delay is an int, 1000 ms/30 FPS = 33.33 repeating rounds down
-        // to 33. Consequently, the timer gains one frame for approximately
-        // every three, so the effective frame rate is actually closer to 40.
+        // to 33. Consequently, the timer gains one frame for every three
+        // so the effective frame rate is actually more like 40.
         timer = new Timer(DELAY, gameClock);
         timer.setInitialDelay(DELAY);
         timer.addActionListener(gameClock);
@@ -114,24 +114,11 @@ public class ZombieMainGame {
                 break;
             case PLAYING:
                 // If playing.
+            	movementHelper();
                 break;
             default:
                 break;
         }
-            
-            // TODO: testing code.
-//            if (keys.up) {
-//                player.move(0, 1, false);
-//            }
-//            if (keys.down) {
-//                player.move(0, 2, false);
-//            }
-//            if (keys.left) {
-//                player.move(1, 0, false);
-//            }
-//            if (keys.right) {
-//                player.move(2, 0, false);
-//            }
         
         // Repaint the GUI.
         frame.repaint();
@@ -140,34 +127,30 @@ public class ZombieMainGame {
     /**
      * Starts game play.
      */
-    public void start() {
+    public void startGame() {
         // Start the game.
         mode = ZombieMode.PLAYING;
         levelNum = 1;      
         zombieLevel = new ZombieLevel(level.houseList.get(levelNum - 1));
         player = zombieLevel.getHouse().player;
+        player.buildMap(zombieLevel.getHouse());
         zombies = zombieLevel.getHouse().zombieList;
+        
         // Main game loop.
         
         // TEST
-        Tile[][] array = zombieLevel.getLayout();
-        for(int y = 0; y < array.length; y++)
-        {
-            for(int x = 0; x < array[y].length; x++)
-                System.out.print(array[x][y].getChar());
-            System.out.print("\n");
-        }
-        
-        while(mode != ZombieMode.TITLE) {
-            // TODO
-        }
+        printCurrentLevel();
     }
     
     /**
      * Restarts the current level.
      */
     public void restartLevel() {
-        // TODO
+    	mode = ZombieMode.PAUSED;
+        zombieLevel.revert();
+        // TODO: get revert methods for both.
+        player = zombieLevel.getHouse().player;
+        zombies = zombieLevel.getHouse().zombieList;
     }
     
     /**
@@ -181,6 +164,7 @@ public class ZombieMainGame {
      * Ends the game and returns to tile.
      */
     public void gameOver() {
+    	score = 0;
         mode = ZombieMode.TITLE;
     }
     
@@ -229,19 +213,49 @@ public class ZombieMainGame {
     }
     
     /**
+     * A helper method for player movement. Converts key binding states into
+     * the format required by player.move.
+     */
+    private void movementHelper() {
+    	boolean run = input.get("run");
+    	int leftRight, upDown;
+    	
+    	// Left/right.
+    	if (input.get("left")) {
+    		leftRight = 1;
+    	} else if (input.get("right")) {
+    		leftRight = 2;
+    	} else {
+    		leftRight = 0;
+    	}
+    	// Up/down.
+    	if (input.get("up")) {
+    		upDown = 1;
+    	} else if (input.get("down")) {
+    		upDown = 2;
+    	} else {
+    		upDown = 0;
+    	}
+    	
+    	if (player != null) {
+    		player.move(leftRight, upDown, run);
+    	}
+    }
+    
+    /**
      * A helper method to handle keyboard input on the title screen. Called
-     * each frame. Also increments the title screen timer every other frame.
+     * each frame.
      */
     private void titleHelper() {
         if (title != null) {
-            // Controls. Uses the frame counter to space out button switches.
+            // Controls. Uses the frame counter to throttle button switches.
             if ((input.get("left") || input.get("right")) &&
                     frameCounter % 7 == 0) {
                 title.switchButton();
             }
             if (input.get("enter") || input.get("action")) {
                 if (title.getSelected() == "start") {
-                    start();
+                    startGame();
                 } else {
                     shutdown();
                 }
@@ -320,6 +334,19 @@ public class ZombieMainGame {
             String key = entry.getKey();
             String value = (entry.getValue() ? "true" : "false");
             System.out.println(key + ": " + value);
+        }
+    }
+    
+    /**
+     * A debugging method that prints the current level to the console.
+     */
+    public void printCurrentLevel() {
+    	Tile[][] array = zombieLevel.getLayout();
+        for(int y = 0; y < array.length; y++)
+        {
+            for(int x = 0; x < array[y].length; x++)
+                System.out.print(array[x][y].getChar());
+            System.out.print("\n");
         }
     }
 
