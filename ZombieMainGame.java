@@ -24,6 +24,7 @@ import javax.swing.Timer;
  * @group James Green
  * @group Marcos Lemus
  * @group Mario LoPrinzi
+ * @version 0.1
  */
 public class ZombieMainGame {
     // Main game timer.

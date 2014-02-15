@@ -106,7 +106,9 @@ public class ZombieFrame extends JFrame {
 		graphics = new GameGraphics(getWidth(), getHeight());
 		graphics.initHouse(house, tileset);
 		graphics.setOpaque(true);
-		pane.remove(0);
+		for (int i = 0; i < pane.getComponentCount(); i++) {
+			pane.remove(i);
+		}
 		pane.add(graphics);
 	}
 	
