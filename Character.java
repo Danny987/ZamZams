@@ -33,6 +33,8 @@ abstract class Character
    * */
   public void setPosition(Point p)
   {
+    p.x *= 50;
+    p.y *= 50;
     this.position = new Point(p);
     this.getHitbox().setLocation(p);
   }
@@ -49,7 +51,7 @@ abstract class Character
 
   int collision(CollisionMap map, int leftRight, int upDown)
   {
-    // 1 = zombie collision, player dead
+    // return 1 = zombie collision, player dead
     exitCollision = false;
     trapCollision = false;
     objectCollision = false;
@@ -57,49 +59,49 @@ abstract class Character
     moveBox.setBounds(this.hitbox);
     if (leftRight == 1 && upDown == 0)
     {
-      moveBox.setLocation((int) (moveBox.x - speed * TILE / FRAMERATE),
+      moveBox.setLocation(Math.round((moveBox.x - speed * TILE / FRAMERATE)),
           moveBox.y);
     }
 
     else if (leftRight == 2 && upDown == 0)
     {
-      moveBox.setLocation((int) (moveBox.x + speed * TILE / FRAMERATE),
+      moveBox.setLocation(Math.round((moveBox.x + speed * TILE / FRAMERATE)),
           moveBox.y);
     }
 
     else if (leftRight == 0 && upDown == 1)
     {
-      moveBox.setLocation(moveBox.x, (int) (moveBox.y - speed * TILE
-          / FRAMERATE));
+      moveBox.setLocation(moveBox.x,
+          Math.round((moveBox.y - speed * TILE / FRAMERATE)));
 
     }
 
     else if (leftRight == 0 && upDown == 2)
     {
-      moveBox.setLocation(moveBox.x, (int) (moveBox.y + speed * TILE
-          / FRAMERATE));
+      moveBox.setLocation(moveBox.x,
+          Math.round((moveBox.y + speed * TILE / FRAMERATE)));
     }
     else if (leftRight == 1 && upDown == 1)
     {
-      moveBox.setLocation((int) (moveBox.x - speed * TILE / FRAMERATE),
-          (int) (moveBox.y - speed * TILE / FRAMERATE));
+      moveBox.setLocation(Math.round((moveBox.x - speed * TILE / FRAMERATE)),
+          Math.round((moveBox.y - speed * TILE / FRAMERATE)));
     }
     else if (leftRight == 1 && upDown == 2)
     {
-      moveBox.setLocation((int) (moveBox.x - speed * TILE / FRAMERATE),
-          (int) (moveBox.y + speed * TILE / FRAMERATE));
+      moveBox.setLocation(Math.round((moveBox.x - speed * TILE / FRAMERATE)),
+          Math.round((moveBox.y + speed * TILE / FRAMERATE)));
     }
 
     else if (leftRight == 2 && upDown == 1)
     {
-      moveBox.setLocation((int) (moveBox.x + speed * TILE / FRAMERATE),
-          (int) (moveBox.y - speed * TILE / FRAMERATE));
+      moveBox.setLocation(Math.round((moveBox.x + speed * TILE / FRAMERATE)),
+          Math.round((moveBox.y - speed * TILE / FRAMERATE)));
     }
 
     else if (leftRight == 2 && upDown == 2)
     {
-      moveBox.setLocation((int) (moveBox.x + speed * TILE / FRAMERATE),
-          (int) (moveBox.y + speed * TILE / FRAMERATE));
+      moveBox.setLocation(Math.round((moveBox.x + speed * TILE / FRAMERATE)),
+          Math.round((moveBox.y + speed * TILE / FRAMERATE)));
     }
 
     for (Zombie zombie : map.getZombieMap())

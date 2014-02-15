@@ -6,7 +6,6 @@
  * @group Ramon 
  * 2/1/14
  * CS 350.00
- * 
  */
 
 import java.awt.*;
@@ -19,9 +18,9 @@ public class Player extends Character
   private int fireTrapCount = 0;
   private float currentStamina = 0;
   // 1 = north, 2 = east, 3 = south, 4 = west
+  // 5 = northeast, 6 = southeast, 7 = southwest, 8 = northwest
   private int direction = 0;
-
-  private boolean sprinting = false;
+  private boolean regenDelay = false;
 
   /**
    * @param newPos
@@ -45,7 +44,12 @@ public class Player extends Character
     this.sight = sight;
     this.speed = speed;
     this.hitbox = new Rectangle(position.x, position.y, 50, 50);
+    this.staminaRegen = stamRegen;
+  }
 
+  public int direction()
+  {
+    return this.direction;
   }
 
   public void useFireTrap()
@@ -98,7 +102,7 @@ public class Player extends Character
        * player hit zombie
        * */
     }
-    else if (trapCollision == true && sprinting == true)
+    else if (trapCollision == true && sprint == true)
     {
       /**
        * player has triggered a trap
@@ -106,16 +110,27 @@ public class Player extends Character
     }
     else if (this.objectCollision == false)
     {
-      if (!sprinting || currentStamina <= 0)
+
+      if (!sprint || currentStamina <= 0 || regenDelay)
       {
         moved = mover(leftRight, upDown, this.speed);
-        if (currentStamina < 0)
+        if (currentStamina <= 0)
         {
           currentStamina = 0;
+          regenDelay = true;
+        }
+        if (currentStamina < (stamina * FRAMERATE / 2))
+        {
+          currentStamina += staminaRegen * FRAMERATE / 6;
+          if (currentStamina >= (stamina * FRAMERATE / 4))
+          {
+            regenDelay = false;
+          }
         }
       }
       else
       {
+        // sprinting speed change
         moved = mover(leftRight, upDown, (2 * this.speed));
         currentStamina--;
       }
@@ -137,7 +152,7 @@ public class Player extends Character
     {
 
       // free movement
-      this.position.x -= TILE * moveSpeed / FRAMERATE;
+      this.position.x -= Math.round(TILE * moveSpeed / FRAMERATE);
       this.hitbox = new Rectangle(position.x, position.y, 50, 50);
       moveFlag = 1;
 
@@ -147,7 +162,7 @@ public class Player extends Character
     {
 
       // free movement
-      this.position.x += TILE * moveSpeed / FRAMERATE;
+      this.position.x += Math.round(TILE * moveSpeed / FRAMERATE);
       this.hitbox = new Rectangle(position.x, position.y, 50, 50);
       moveFlag = 1;
 
@@ -156,7 +171,7 @@ public class Player extends Character
     {
 
       // free movement
-      this.position.y -= TILE * moveSpeed / FRAMERATE;
+      this.position.y -= Math.round(TILE * moveSpeed / FRAMERATE);
       this.hitbox = new Rectangle(position.x, position.y, 50, 50);
       moveFlag = 1;
 
@@ -166,7 +181,7 @@ public class Player extends Character
     {
 
       // free movement
-      this.position.y += TILE * moveSpeed / FRAMERATE;
+      this.position.y += Math.round(TILE * moveSpeed / FRAMERATE);
       this.hitbox = new Rectangle(position.x, position.y, 50, 50);
       moveFlag = 1;
 
@@ -175,8 +190,10 @@ public class Player extends Character
     else if (leftRight == 1 && upDown == 1)
     {
       // free movement
-      this.position.x -= (TILE * moveSpeed / FRAMERATE) / Math.sqrt(2);
-      this.position.y -= (TILE * moveSpeed / FRAMERATE) / Math.sqrt(2);
+      this.position.x -= Math.round((TILE * moveSpeed / FRAMERATE)
+          / Math.sqrt(2));
+      this.position.y -= Math.round((TILE * moveSpeed / FRAMERATE)
+          / Math.sqrt(2));
       this.hitbox = new Rectangle(position.x, position.y, 50, 50);
       moveFlag = 1;
 
@@ -185,8 +202,10 @@ public class Player extends Character
     {
 
       // free movement
-      this.position.x -= (TILE * moveSpeed / FRAMERATE) / Math.sqrt(2);
-      this.position.y += (TILE * moveSpeed / FRAMERATE) / Math.sqrt(2);
+      this.position.x -= Math.round((TILE * moveSpeed / FRAMERATE)
+          / Math.sqrt(2));
+      this.position.y += Math.round((TILE * moveSpeed / FRAMERATE)
+          / Math.sqrt(2));
       this.hitbox = new Rectangle(position.x, position.y, 50, 50);
       moveFlag = 1;
 
@@ -196,8 +215,10 @@ public class Player extends Character
     {
 
       // free movement
-      this.position.x += (TILE * moveSpeed / FRAMERATE) / Math.sqrt(2);
-      this.position.y -= (TILE * moveSpeed / FRAMERATE) / Math.sqrt(2);
+      this.position.x += Math.round((TILE * moveSpeed / FRAMERATE)
+          / Math.sqrt(2));
+      this.position.y -= Math.round((TILE * moveSpeed / FRAMERATE)
+          / Math.sqrt(2));
       this.hitbox = new Rectangle(position.x, position.y, 50, 50);
       moveFlag = 1;
 
@@ -207,8 +228,10 @@ public class Player extends Character
     {
 
       // free movement
-      this.position.x += (TILE * moveSpeed / FRAMERATE) / Math.sqrt(2);
-      this.position.y += (TILE * moveSpeed / FRAMERATE) / Math.sqrt(2);
+      this.position.x += Math.round((TILE * moveSpeed / FRAMERATE)
+          / Math.sqrt(2));
+      this.position.y += Math.round((TILE * moveSpeed / FRAMERATE)
+          / Math.sqrt(2));
       this.hitbox = new Rectangle(position.x, position.y, 50, 50);
       moveFlag = 1;
 
@@ -221,7 +244,7 @@ public class Player extends Character
     /**
      * test player test point and assert checks
      */
-    Point test = new Point(800, 200);
+    Point test = new Point(16, 4);
     Level level = new Level("test_level.xml");
     Player p = new Player(1.0f, 1.0f, 1.0f, 1.0f, 1.0f);
 
@@ -233,46 +256,46 @@ public class Player extends Character
     assert p.move(1, 0, false) == (1);
     assert p.position.toString().equals("java.awt.Point[x=798,y=200]");
     assert p.move(2, 0, false) == (1);
-    assert p.position.toString().equals("java.awt.Point[x=799,y=200]");
+    assert p.position.toString().equals("java.awt.Point[x=800,y=200]");
     assert p.move(1, 1, false) == (1);
-    assert p.position.toString().equals("java.awt.Point[x=797,y=198]");
+    assert p.position.toString().equals("java.awt.Point[x=799,y=199]");
     assert p.move(1, 2, false) == (1);
-    assert p.position.toString().equals("java.awt.Point[x=795,y=199]");
+    assert p.position.toString().equals("java.awt.Point[x=798,y=200]");
     assert p.move(2, 1, false) == (1);
-    assert p.position.toString().equals("java.awt.Point[x=796,y=197]");
+    assert p.position.toString().equals("java.awt.Point[x=799,y=199]");
     assert p.move(2, 2, false) == (1);
-    assert p.position.toString().equals("java.awt.Point[x=797,y=198]");
+    assert p.position.toString().equals("java.awt.Point[x=800,y=200]");
     assert p.move(0, 1, false) == (1);
-    assert p.position.toString().equals("java.awt.Point[x=797,y=196]");
+    assert p.position.toString().equals("java.awt.Point[x=800,y=198]");
     assert p.move(0, 2, false) == (1);
-    assert p.position.toString().equals("java.awt.Point[x=797,y=197]");
+    assert p.position.toString().equals("java.awt.Point[x=800,y=200]");
 
     /**
      * collision tests for zombie collision collision returns 1 if it hit a
      * zombie
      */
-    test.setLocation(300, 100);
+    test.setLocation(6, 2);
     p.setPosition(test);
     assert p.collision(Character.getCollisionMap(), 1, 0) == (1);
-    test.setLocation(200, 100);
+    test.setLocation(4, 2);
     p.setPosition(test);
     assert p.collision(Character.getCollisionMap(), 2, 0) == (1);
-    test.setLocation(300, 150);
+    test.setLocation(6, 3);
     p.setPosition(test);
     assert p.collision(Character.getCollisionMap(), 1, 1) == (1);
-    test.setLocation(300, 50);
+    test.setLocation(6, 1);
     p.setPosition(test);
     assert p.collision(Character.getCollisionMap(), 1, 2) == (1);
-    test.setLocation(200, 150);
+    test.setLocation(4, 3);
     p.setPosition(test);
     assert p.collision(Character.getCollisionMap(), 2, 1) == (1);
-    test.setLocation(200, 50);
+    test.setLocation(4, 1);
     p.setPosition(test);
     assert p.collision(Character.getCollisionMap(), 2, 2) == (1);
-    test.setLocation(250, 150);
+    test.setLocation(5, 3);
     p.setPosition(test);
     assert p.collision(Character.getCollisionMap(), 0, 1) == (1);
-    test.setLocation(250, 50);
+    test.setLocation(5, 1);
     p.setPosition(test);
     assert p.collision(Character.getCollisionMap(), 0, 2) == (1);
 
@@ -281,7 +304,7 @@ public class Player extends Character
      * any time it did not hit a zombie
      */
     Player p2 = new Player(1.0f, 1.0f, 1.0f, 1.0f, 1.0f);
-    test.setLocation(50, 50);
+    test.setLocation(1, 1);
     p2.setPosition(test);
     assert p2.collision(Character.getCollisionMap(), 0, 0) == (0);
     assert p2.objectCollision == false;
@@ -291,7 +314,7 @@ public class Player extends Character
     assert p2.objectCollision == true;
     assert p2.collision(Character.getCollisionMap(), 1, 2) == (0);
     assert p2.objectCollision == true;
-    test.setLocation(level.houseList.get(0).getHouseWidth() * 50 - 50, 50);
+    test.setLocation(level.houseList.get(0).getHouseWidth() - 1, 1);
     p2.setPosition(test);
     assert p2.collision(Character.getCollisionMap(), 2, 1) == (0);
     assert p2.objectCollision == true;
@@ -299,8 +322,8 @@ public class Player extends Character
     assert p2.objectCollision == true;
     assert p2.collision(Character.getCollisionMap(), 2, 0) == (0);
     assert p2.objectCollision == true;
-    test.setLocation(level.houseList.get(0).getHouseWidth() * 50 - 50,
-        level.houseList.get(0).getHouseLength() * 50 - 50);
+    test.setLocation(level.houseList.get(0).getHouseWidth() - 1,
+        level.houseList.get(0).getHouseLength() - 1);
     p2.setPosition(test);
     assert p2.collision(Character.getCollisionMap(), 0, 2) == (0);
     assert p2.objectCollision == true;
@@ -310,7 +333,7 @@ public class Player extends Character
     /**
      * testing firetrap collision collision returns 0 if it didn't hit a zombie
      * */
-    test.setLocation(1600, 200);
+    test.setLocation(32, 4);
     p2.setPosition(test);
     assert p2.collision(Character.getCollisionMap(), 0, 2) == (0);
     assert p2.trapCollision == true;

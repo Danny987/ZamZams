@@ -99,23 +99,6 @@ public class ZombieHouse {
     private void relinquishControl() {
         game.takeControl();
     }
-    
-//    /**
-//     * Start the graphics engine.
-//     */
-//    private void startGraphics() {
-//        synchronized (windowLock) {
-//            try {
-//                windowLock.wait();
-//            } catch (InterruptedException ex) {
-//                ex.printStackTrace();
-//            }
-//        }
-//        int width = window.getSize().width;
-//        int height = window.getSize().height;
-////        GameGraphics graphics = new GameGraphics(width, height);
-////        game.linkToGraphics(graphics);
-//    }
 
 	/**
 	 * ZombieHouse's main method.

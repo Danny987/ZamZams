@@ -135,8 +135,9 @@ public class ZombieMainGame {
     public void startGame() {
         // Start the game.
         mode = ZombieMode.PLAYING;
-        levelNum = 1;      
-        zombieLevel = new ZombieLevel(level.houseList.get(levelNum - 1));
+        levelNum = 0;
+        score = 0;
+        zombieLevel = new ZombieLevel(level.houseList.get(levelNum));
         player = zombieLevel.getHouse().player;
         player.buildMap(zombieLevel.getHouse());
         zombies = zombieLevel.getHouse().zombieList;
@@ -152,6 +153,13 @@ public class ZombieMainGame {
         
         // TEST
         printCurrentLevel();
+    }
+    
+    /**
+     * Advances the level if there are more levels available.
+     */
+    public void nextLevel() {
+    	// TODO
     }
     
     /**
@@ -216,6 +224,8 @@ public class ZombieMainGame {
                 case "right":
                     input.put("left", false);
                     break;
+                case "action":
+                	input.put("run", false);
                 default:
                     break;
             }
@@ -317,6 +327,7 @@ public class ZombieMainGame {
         } catch (NullPointerException ex) {
             ex.printStackTrace();
         }
+        assert (keys != null) : "keys is null";
     }
     
     /**
