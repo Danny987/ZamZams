@@ -40,7 +40,7 @@ public class GraphicsTestFrame extends JFrame implements MouseMotionListener, Ke
     int x = arg0.getX();
     int y = arg0.getY();
 
-    level.houseList.get(0).player.move(x, y, false);
+//    level.houseList.get(0).player.move(x, y, false);
 
 //    GameGraphics.GameImage.PLAYER.x = x;
 //    GameGraphics.GameImage.PLAYER.y = y;
@@ -54,7 +54,14 @@ public class GraphicsTestFrame extends JFrame implements MouseMotionListener, Ke
 
   @Override
   public void keyPressed(KeyEvent arg0) {
-    // TODO Auto-generated method stub
+    if(arg0.getKeyChar() == 'a')
+      level.houseList.get(0).player.move(1, 0, false);
+    if(arg0.getKeyChar() == 's')
+      level.houseList.get(0).player.move(0, 2, false);
+    if(arg0.getKeyChar() == 'd')
+      level.houseList.get(0).player.move(2, 0, false);
+    if(arg0.getKeyChar() == 'w')
+      level.houseList.get(0).player.move(0, 1, false);
     game.update();
     
   }
