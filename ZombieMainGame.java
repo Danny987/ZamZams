@@ -41,6 +41,7 @@ public class ZombieMainGame {
     private Level level;
     private boolean hasControl;
     private int frameCounter;
+    private GameGraphics graphics;
     
     private int levelNum;
     private long score;
@@ -115,6 +116,9 @@ public class ZombieMainGame {
             case PLAYING:
                 // If playing.
             	movementHelper();
+            	if (graphics != null) {
+            		graphics.update();
+            	}
                 break;
             default:
                 break;
@@ -140,6 +144,8 @@ public class ZombieMainGame {
         assert (zombieLevel != null) : "zombieLevel is null";
         
         frame.startGraphics(zombieLevel.getHouse(), 0);
+        graphics = frame.getGameGraphics();
+        graphics.update();
         
         // Main game loop.
         
@@ -181,8 +187,7 @@ public class ZombieMainGame {
         linkToKeyBinds();
         hasControl = true;
         // Show the title screen.
-//        showTitle();
-        startGame();
+        showTitle();
     }
     
     /**
