@@ -44,6 +44,16 @@ public class Tile
 		hitBox.setBounds(x * 50, y * 50, width * 50, height * 50);
 
 	}
+	
+	public int getX()
+	{
+		return this.x;
+	}
+	
+	public int getY()
+	{
+		return this.y;
+	}
 
 	public int getWidth()
 	{
