@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 
+
 /**
  * @author Mario LoPrinzi
  * 
@@ -16,9 +17,9 @@ public class CollisionMap
     collisionMap.add(new Tile('W', curHouse.getHouseWidth(), 1, 0, 0));
     collisionMap.add(new Tile('W', 1, curHouse.getHouseLength(), 0, 0));
     collisionMap.add(new Tile('W', curHouse.getHouseWidth(), 1, 0,
-        curHouse.getHouseLength()));
+        curHouse.getHouseLength()-1));
     collisionMap.add(new Tile('W', 1, curHouse.getHouseLength(), curHouse
-        .getHouseWidth(), 0));
+        .getHouseWidth()-1, 0));
 
   }
 

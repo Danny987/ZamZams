@@ -27,7 +27,6 @@ public class ZombieFrame extends JFrame {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private Dimension size;
 	private Container pane;
 	private ZombieKeyBinds keys;
 	private GameGraphics graphics;
@@ -76,7 +75,8 @@ public class ZombieFrame extends JFrame {
             try {
                 graphics.setFullScreenWindow(this);
                 // Having gone full screen, retrieve the display size.
-                size = Toolkit.getDefaultToolkit().getScreenSize();
+                // size = Toolkit.getDefaultToolkit().getScreenSize();
+                
                 // This double-switching of setVisible is to fix a bug with 
                 // full-screen-exclusive mode on OS X. Versions 10.8 and later
                 // don't send keyboard events properly without it.
@@ -91,7 +91,6 @@ public class ZombieFrame extends JFrame {
             // maximized window mode.
             System.err.println("Full-screen-exclusive mode not supported.");
             setExtendedState(Frame.MAXIMIZED_BOTH);
-            size = getSize();
         }
         setVisible(true);
 	}
@@ -106,10 +105,22 @@ public class ZombieFrame extends JFrame {
 		graphics = new GameGraphics(getWidth(), getHeight());
 		graphics.initHouse(house, tileset);
 		graphics.setOpaque(true);
+
+		replace(graphics);
+	}
+	
+	/**
+	 * Replace the current contents of the frame's content pane.
+	 * 
+	 * @param panel JPanel of the new contents of the content pane.
+	 */
+	public void replace(JPanel panel) {
+		// Removes everything from the content pane.
 		for (int i = 0; i < pane.getComponentCount(); i++) {
 			pane.remove(i);
 		}
-		pane.add(graphics);
+		
+		pane.add(panel);
 	}
 	
 	/**

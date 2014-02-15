@@ -107,7 +107,6 @@ abstract class Character
 
     for (Zombie zombie : map.getZombieMap())
     {
-      // System.out.println(zombie.getHitbox().toString());
       if (zombie.getHitbox().intersects(moveBox))
       {
 
