@@ -39,20 +39,25 @@ public class ZombieLevel {
      */
     private final Tile[][] original;
     private Tile[][] layout;
+    private House house;
     
     /**
      * ZombieLevel's constructor.
      * 
      * @param layout 2-D Tile array representing the level's floor layout.
      */
-    public ZombieLevel(Tile[][] layout) {
+    public ZombieLevel(House current) {
+        this.house = current;
+        int width = current.getHouseWidth();
+        int length = current.getHouseLength();
+        Tile[][] array = current.getHouseLayout();
         // On instantiation, layout is set to a copy of the original array.
-        this.layout = new Tile[layout.length][layout[0].length];
-        original = new Tile[layout.length][layout[0].length];
-        for (int x = 0; x < layout.length; x++) {
-            for (int y = 0; y < layout[0].length; y++) {
-                original[x][y] = layout[x][y].cloneTile();
-                this.layout[x][y] = original[x][y].cloneTile();
+        layout = new Tile[width][length];
+        original = new Tile[width][length];
+        for (int x = 0; x < length; x++) {
+            for (int y = 0; y < width; y++) {
+                original[x][y] = array[x][y].cloneTile();
+                layout[x][y] = original[x][y].cloneTile();
             }
         }
     }
@@ -67,8 +72,7 @@ public class ZombieLevel {
     public boolean blackenTile(int x, int y) {
         // Exterior walls cannot be modified.
         if (layout[x][y].getChar() != 'W') {
-            layout[x][y] = new Tile();
-            layout[x][y].setTile('B', 1, 1);
+            layout[x][y] = new Tile('B', 1, 1, x, y);
             return true;
         } else {
             return false;
@@ -109,6 +113,15 @@ public class ZombieLevel {
      */
     public Dimension getSize() {
         return new Dimension(layout.length, layout[0].length);
+    }
+    
+    /**
+     * Getter for house.
+     * 
+     * @return The house object.
+     */
+    public House getHouse() {
+        return house;
     }
     
     /**

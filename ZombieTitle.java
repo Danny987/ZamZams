@@ -1,3 +1,11 @@
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Image;
+
+import javax.swing.ImageIcon;
+import javax.swing.JPanel;
+
 /**
  * ZombieHouse - a zombie survival game written in Java for CS 351.
  * 
@@ -8,10 +16,6 @@
  * Marcos Lemus
  * Mario LoPrinzi
  */
-
-import java.awt.*;
-
-import javax.swing.*;
 
 /**
  * ZombieTitle - ZombieHouse's title screen.
@@ -45,13 +49,13 @@ public class ZombieTitle extends JPanel {
             titleBackground = new ImageIcon(this.getClass().getResource(
                     "/images/title-screen.png")).getImage();
             startButtonPlain = new ImageIcon(this.getClass().getResource(
-                    "/images/start-button-plain.png")).getImage();
+                    "/images/start-button.png")).getImage();
             startButtonSelected = new ImageIcon(this.getClass().getResource(
-                    "/images/start-button-selected.png")).getImage();
+                    "/images/start-selected.png")).getImage();
             exitButtonPlain = new ImageIcon(this.getClass().getResource(
-                    "/images/exit-button-plain.png")).getImage();
+                    "/images/exit-button.png")).getImage();
             exitButtonSelected = new ImageIcon(this.getClass().getResource(
-                    "/images/exit-button-selected.png")).getImage();
+                    "/images/exit-selected.png")).getImage();
         } catch (NullPointerException ex) {
             System.err.println("Error: title screen resources not found.");
         }

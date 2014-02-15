@@ -7,7 +7,6 @@ import java.awt.Shape;
 import java.awt.geom.Area;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 import java.util.List;
 
 public class LightSource {
@@ -16,8 +15,8 @@ public class LightSource {
 	
 	//remove shapes list.
 	//Add container object
-	private static List<Shape> shapes = new ArrayList<>();
-	private static List<LightSource> lights = new ArrayList<>();
+	private List<Shape> shapes;
+//	private List<LightSource> lights = new ArrayList<>();
 	
 	private static BufferedImage lightmap;
 	private static Graphics2D lightmapGraphics;
@@ -29,7 +28,7 @@ public class LightSource {
 	public LightSource(Color color) {
 		this.color = color;
 
-		lights.add(this);
+//		lights.add(this);
 	}
 	
 	public void init() {
@@ -44,9 +43,9 @@ public class LightSource {
 		lightmapGraphics.setBackground(new Color(0, 0, 0, 0));
 		lightmapGraphics.clearRect(0, 0, 900, 900);
 
-		for(LightSource l: lights){
-			l.updateLight();
-		}
+//		for(LightSource l: lights){
+//			l.updateLight();
+//		}
 		
 		return lightmap;
 	}
@@ -273,9 +272,8 @@ public class LightSource {
 		return false;
 	}
 
-	public int addShapes(Shape shape) {
-		shapes.add(shape);
-		return shapes.size();
+	public void changeShapes(List<Shape> shapes) {
+		this.shapes = shapes;
 	}
 
 //	private int[] listToArray(List<Integer> list) {

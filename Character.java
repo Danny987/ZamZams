@@ -37,9 +37,9 @@ abstract class Character
     this.getHitbox().setLocation(p);
   }
 
-  public void buildMap(ArrayList<Tile> houseLayout, ArrayList<Zombie> zombieList)
+  public void buildMap(House curHouse)
   {
-    cMap.BuildcollisionMap(houseLayout, zombieList);
+    cMap.BuildcollisionMap(curHouse);
   }
 
   public Rectangle getHitbox()
@@ -104,7 +104,7 @@ abstract class Character
 
     for (Zombie zombie : map.getZombieMap())
     {
-      System.out.println(zombie.getHitbox().toString());
+
       if (zombie.getHitbox().intersects(moveBox))
       {
 
