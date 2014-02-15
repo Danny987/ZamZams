@@ -174,8 +174,10 @@ public class GameGraphics extends JPanel {
     List<Zombie> zombies = house.zombieList;
     Rectangle2D box;
     int x, y, width, height;
-    charactersGraphics.setColor(Color.RED);
-
+    
+    charactersGraphics.setBackground(new Color(0,0,0,0));
+    charactersGraphics.clearRect(0, 0, characters.getWidth(), characters.getHeight());
+    
     backgroundGraphics.setColor(Color.BLUE);
     for (Tile t : house.tileList) {
       x = (int) t.getX() * 50;
@@ -196,7 +198,8 @@ public class GameGraphics extends JPanel {
 
     Point p = house.player.getPosition();
     x = p.x;
-    y = p.x;
+    y = p.y;
+
     charactersGraphics.setColor(Color.GREEN);
     charactersGraphics.fillRect(x, y, 50, 50);
     repaint();
@@ -205,37 +208,22 @@ public class GameGraphics extends JPanel {
   @Override
   public void paint(Graphics g) {
     int backgroundX, backgroundY;
-    backgroundY = backgroundX = 0;
+    backgroundX = backgroundY = 0;
+    
+    Point p;
+    p = house.player.getPosition();
+    
+    backgroundX = this.getWidth()/2 - p.x;
+    backgroundY = this.getHeight()/2 - p.y;
 
-    // Center player on screen
-    if (this.getWidth() > background.getWidth()) {
-      backgroundX = (this.getWidth() - background.getWidth()) / 2;
-    }
-    else {
-      int xDisp = house.player.getPosition().x - characters.getWidth() / 2;
-
-      backgroundX = -xDisp;
-      if (background.getWidth() + backgroundX < this.getWidth()) {
-        backgroundX = this.getWidth() - background.getWidth();
-      }
-      else if (backgroundX > 0)
-        backgroundX = 0;
-    }
-
-    if (this.getHeight() > background.getHeight()) {
-      backgroundY = (this.getHeight() - background.getHeight()) / 2;
-    }
-    else {
-      int yDisp = house.player.getPosition().y - characters.getHeight() / 2;
-
-      backgroundY = -yDisp;
-      if (background.getHeight() + backgroundY < this.getHeight()) {
-        backgroundY = this.getHeight() - background.getHeight();
-      }
-      else if (backgroundY > 0)
-        backgroundY = 0;
-    }
-
+    if(backgroundX > 0) backgroundX = 0;
+    else if(backgroundX + background.getWidth() < this.getWidth())
+      backgroundX -= backgroundX + background.getWidth() - this.getWidth();
+    
+    if(backgroundY > 0) backgroundY = 0;
+    else if(backgroundY + background.getHeight() < this.getHeight())
+      backgroundY -= backgroundY + background.getHeight() - this.getHeight();
+    
     g.setColor(Color.BLACK);
     g.fillRect(0, 0, this.getWidth(), this.getHeight());
     g.drawImage(background, backgroundX, backgroundY, null);
