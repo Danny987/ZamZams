@@ -9,6 +9,7 @@ public class Zombie extends Character
 {
   private int walkType = 0; // 0 is random walk and 1 is line walk
   private float probabiltyA, probablityB, smell;
+  private int leftRight = 0, upDown = 0;
   // 1 = north, 2 = east, 3 = south, 4 = west
   // 5 = northeast, 6 = southeast, 7 = southwest, 8 = northwest
   private int chosenDirection = 0;
@@ -44,14 +45,12 @@ public class Zombie extends Character
       if (probabiltyA >= (Math.random() * 100))
       {
         // chooses a random direction to move in
-        this.chosenDirection = (int) (Math.random() * 9);
       }
 
       else
       {
         // no movement
         chosenDirection = 0;
-        System.out.println(chosenDirection);
 
       }
     }
@@ -61,8 +60,8 @@ public class Zombie extends Character
       if (probabiltyA >= (Math.random() * 100))
       {
         // chooses a random direction to move in
-        chosenDirection = (int) (Math.random() * 8 ) + 1;
-        System.out.println(chosenDirection);
+        chosenDirection = (int) (Math.random() * 8) + 1;
+        System.out.println(probabiltyA);
       }
 
       else
@@ -83,65 +82,63 @@ public class Zombie extends Character
 
   private void move()
   {
-    int leftRight = 0, upDown = 0;
+    System.out.println("here" + chosenDirection);
 
-    switch (chosenDirection)
-    {
-    case 0:
+    if (chosenDirection == 0)
     {
       leftRight = 0;
       upDown = 0;
-      break;
+
     }
-    case 1:
+    else if (chosenDirection == 1)
     {
       leftRight = 0;
       upDown = 1;
-      break;
+
     }
-    case 2:
+    else if (chosenDirection == 2)
     {
       leftRight = 2;
       upDown = 0;
-      break;
+
     }
-    case 3:
+    else if (chosenDirection == 3)
     {
       leftRight = 0;
       upDown = 2;
-      break;
+
     }
-    case 4:
+    else if (chosenDirection == 4)
     {
       leftRight = 1;
       upDown = 0;
-      break;
+
     }
-    case 5:
+    else if (chosenDirection == 5)
     {
       leftRight = 2;
       upDown = 1;
-      break;
+
     }
-    case 6:
+    else if (chosenDirection == 6)
     {
       leftRight = 2;
       upDown = 2;
-      break;
+
     }
-    case 7:
+    else if (chosenDirection == 7)
     {
       leftRight = 1;
       upDown = 2;
-      break;
+
     }
-    case 8:
+    else if (chosenDirection == 8)
     {
       leftRight = 1;
       upDown = 1;
-      break;
+
     }
-    }
+
     int collide = collision(cMap, leftRight, upDown);
 
     if (collide == 1)
@@ -161,7 +158,7 @@ public class Zombie extends Character
     {
       if (this.chosenDirection == 0)
       {
-        previousDirection = direction;
+        previousDirection = chosenDirection;
       }
 
       else if (this.chosenDirection == 4)
@@ -171,8 +168,8 @@ public class Zombie extends Character
         this.position.x -= (TILE * speed / FRAMERATE);
         this.hitbox = new Rectangle(position.x + 5, position.y + 5, 40, 40);
 
-        lastMovedDirection = direction;
-        previousDirection = direction;
+        lastMovedDirection = chosenDirection;
+        previousDirection = chosenDirection;
         this.direction = 4;
 
       }
@@ -181,10 +178,10 @@ public class Zombie extends Character
       {
 
         // free movement
-        this.position.x += (TILE * speed / FRAMERATE);
+        this.position.x += (TILE * speed / FRAMERATE) + 1;
         this.hitbox = new Rectangle(position.x + 5, position.y + 5, 40, 40);
-        previousDirection = direction;
-        lastMovedDirection = direction;
+        previousDirection = chosenDirection;
+        lastMovedDirection = chosenDirection;
         this.direction = 2;
 
       }
@@ -194,8 +191,8 @@ public class Zombie extends Character
         // free movement
         this.position.y -= (TILE * speed / FRAMERATE);
         this.hitbox = new Rectangle(position.x + 5, position.y + 5, 40, 40);
-        lastMovedDirection = direction;
-        previousDirection = direction;
+        lastMovedDirection = chosenDirection;
+        previousDirection = chosenDirection;
         this.direction = 1;
       }
 
@@ -203,10 +200,10 @@ public class Zombie extends Character
       {
 
         // free movement
-        this.position.y += (TILE * speed / FRAMERATE);
+        this.position.y += (TILE * speed / FRAMERATE) + 1;
         this.hitbox = new Rectangle(position.x + 5, position.y + 5, 40, 40);
-        lastMovedDirection = direction;
-        previousDirection = direction;
+        lastMovedDirection = chosenDirection;
+        previousDirection = chosenDirection;
         this.direction = 3;
       }
 
@@ -216,8 +213,8 @@ public class Zombie extends Character
         this.position.x -= ((TILE * speed / FRAMERATE) / Math.sqrt(2));
         this.position.y -= ((TILE * speed / FRAMERATE) / Math.sqrt(2));
         this.hitbox = new Rectangle(position.x + 5, position.y + 5, 40, 40);
-        lastMovedDirection = direction;
-        previousDirection = direction;
+        lastMovedDirection = chosenDirection;
+        previousDirection = chosenDirection;
         this.direction = 8;
       }
       else if (this.chosenDirection == 7)
@@ -225,10 +222,10 @@ public class Zombie extends Character
 
         // free movement
         this.position.x -= ((TILE * speed / FRAMERATE) / Math.sqrt(2));
-        this.position.y += ((TILE * speed / FRAMERATE) / Math.sqrt(2));
+        this.position.y += ((TILE * speed / FRAMERATE) / Math.sqrt(2) + 1);
         this.hitbox = new Rectangle(position.x + 5, position.y + 5, 40, 40);
-        lastMovedDirection = direction;
-        previousDirection = direction;
+        lastMovedDirection = chosenDirection;
+        previousDirection = chosenDirection;
         this.direction = 7;
       }
 
@@ -236,11 +233,11 @@ public class Zombie extends Character
       {
 
         // free movement
-        this.position.x += ((TILE * speed / FRAMERATE) / Math.sqrt(2));
+        this.position.x += ((TILE * speed / FRAMERATE) / Math.sqrt(2) + 1);
         this.position.y -= ((TILE * speed / FRAMERATE) / Math.sqrt(2));
         this.hitbox = new Rectangle(position.x + 5, position.y + 5, 40, 40);
-        lastMovedDirection = direction;
-        previousDirection = direction;
+        lastMovedDirection = chosenDirection;
+        previousDirection = chosenDirection;
         this.direction = 5;
       }
 
@@ -248,11 +245,11 @@ public class Zombie extends Character
       {
 
         // free movement
-        this.position.x += ((TILE * speed / FRAMERATE) / Math.sqrt(2));
-        this.position.y += ((TILE * speed / FRAMERATE) / Math.sqrt(2));
+        this.position.x += ((TILE * speed / FRAMERATE) / Math.sqrt(2) + 1);
+        this.position.y += ((TILE * speed / FRAMERATE) / Math.sqrt(2) + 1);
         this.hitbox = new Rectangle(position.x + 5, position.y + 5, 40, 40);
-        lastMovedDirection = direction;
-        previousDirection = direction;
+        lastMovedDirection = chosenDirection;
+        previousDirection = chosenDirection;
         this.direction = 6;
       }
     }
