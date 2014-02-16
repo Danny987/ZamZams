@@ -56,18 +56,27 @@ public class Sound2D extends Application implements Runnable
 
   public void switchMenu()
   {
-    System.out.println("haha");
-    try{
-    menuSwitch.get();
-    }
-    catch(NullPointerException e)
+    try
     {
-      while(isReadyFX==false)
+      menuSwitch.get();
+    } catch (NullPointerException e)
+    {
+      while (isReadyFX == false)
       {
-        System.out.println("hohohoho");
       }
     }
-      menuSwitch.set(!menuSwitch.get());
+    menuSwitch.set(!menuSwitch.get());
+  }
+
+  public void pauseMusic()
+  {
+    player.pause();
+  }
+
+  public void playMusic()
+  {
+    while(player==null);
+    player.play();
   }
 
   public Sound2D()
@@ -251,12 +260,7 @@ public class Sound2D extends Application implements Runnable
     t.start();
     System.out.println("launch");
     man.playDistSound(new Point(1, 1), new Point(0, 0), 0, true);
-    for (int i = 0; i < 360; i++)
-    {
-      for (int k = 1; k<0; k++)
-      {
-      }
-    }
+    man.playDistSound(new Point(0, 0), new Point(1, 1), 0, false);
     man.switchMenu();
   }
 
@@ -271,9 +275,9 @@ public class Sound2D extends Application implements Runnable
   {
     musicList = new ArrayList<>();
     File musicFile = new File("src/gameMusic");
-    System.out.println("\"src/gameMusic\" exists?; "+ musicFile.exists());
+    System.out.println("\"src/gameMusic\" exists?; " + musicFile.exists());
     String file = "file:///" + musicFile.getAbsolutePath().replace('\\', '/');
-    System.out.println("Path is: "+file);
+    System.out.println("Path is: " + file);
     for (String i : musicFile.list())
     {
       if (!i.endsWith(".mp3"))
