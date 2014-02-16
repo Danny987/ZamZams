@@ -46,14 +46,28 @@ public class Sound2D extends Application implements Runnable
 
   private MediaPlayerBuilder menuBuilder;
   private MediaPlayerBuilder gameBuilder;
-  private static BooleanProperty menuSwitch;
+  private static volatile BooleanProperty menuSwitch;
+  private static ChangeListener<Boolean> listen;
   private static MediaPlayer player;
+  private static Media openScreen;
   ArrayList<Media> musicList;
   private Random rand;
+  private static boolean isReadyFX = false;
 
   public void switchMenu()
   {
-    menuSwitch.set(!menuSwitch.get());
+    System.out.println("haha");
+    try{
+    menuSwitch.get();
+    }
+    catch(NullPointerException e)
+    {
+      while(isReadyFX==false)
+      {
+        System.out.println("hohohoho");
+      }
+    }
+      menuSwitch.set(!menuSwitch.get());
   }
 
   public Sound2D()
@@ -239,7 +253,9 @@ public class Sound2D extends Application implements Runnable
     man.playDistSound(new Point(1, 1), new Point(0, 0), 0, true);
     for (int i = 0; i < 360; i++)
     {
-      man.playRunSound(false);
+      for (int k = 1; k<0; k++)
+      {
+      }
     }
     man.switchMenu();
   }
@@ -255,32 +271,37 @@ public class Sound2D extends Application implements Runnable
   {
     musicList = new ArrayList<>();
     File musicFile = new File("src/gameMusic");
+    System.out.println("\"src/gameMusic\" exists?; "+ musicFile.exists());
     String file = "file:///" + musicFile.getAbsolutePath().replace('\\', '/');
+    System.out.println("Path is: "+file);
     for (String i : musicFile.list())
     {
       if (!i.endsWith(".mp3"))
         continue;
       musicList.add(new Media(file + "/" + i));
     }
-    final Media openScreen = new Media(file + "/menuMusic/EveningOfChaos.mp3");
+    openScreen = new Media(file + "/menuMusic/EveningOfChaos.mp3");
     menuSwitch = new SimpleBooleanProperty(true);
-    menuSwitch.addListener(new ChangeListener<Boolean>()
+    listen = new ChangeListener<Boolean>()
     {
 
       @Override
       public void changed(ObservableValue<? extends Boolean> arg0,
           Boolean arg1, Boolean arg2)
       {
+        System.out.println("Hahaha");
         if (menuSwitch.get())
         {
-          player = menuBuilder.build();
+          player = menuBuilder.media(openScreen).build();
         } else
         {
-          player = gameBuilder.build();
+          player = gameBuilder.media(
+              musicList.get(rand.nextInt(musicList.size()))).build();
         }
 
       }
-    });
+    };
+    menuSwitch.addListener(listen);
 
     // Attaches the 'on Ready, play' runnable to the builder
 
@@ -324,7 +345,7 @@ public class Sound2D extends Application implements Runnable
             player = gameBuilder.media(musicList.get(val)).build();
           }
         });
-
+    isReadyFX = true;
   }
 
   class DistSound implements Runnable
