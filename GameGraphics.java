@@ -204,7 +204,7 @@ public class GameGraphics extends JPanel {
     HUDGraphics.clearRect(0, 0, this.getWidth(), this.getHeight());
     HUDGraphics.setColor(Color.ORANGE);
     HUDGraphics.fillRect(10, this.getHeight() - 40, 20, 20);
-    HUDGraphics.drawString(Integer.toString(house.player.getFireTrapCount()), 40, this.getHeight() - 40);
+//    HUDGraphics.drawString(Integer.toString(house.player.getFireTrapCount()), 40, this.getHeight() - 40);
 
     charactersGraphics.setColor(Color.GREEN);
     charactersGraphics.fillRoundRect(x, y, 50, 50, 10, 10);
@@ -232,7 +232,9 @@ public class GameGraphics extends JPanel {
       backgroundY = 0;
     else if (backgroundY + background.getHeight() < this.getHeight())
       backgroundY -= backgroundY + background.getHeight() - this.getHeight();
-
+    
+    g.setClip(new Rectangle2D.Float(0, 0, this.getWidth(), this.getHeight()));
+    
     g.drawImage(background, backgroundX, backgroundY, null);
     g.drawImage(characters, backgroundX, backgroundY, null);
     g.drawImage(lights, backgroundX, backgroundY, null);

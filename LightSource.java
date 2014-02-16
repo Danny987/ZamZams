@@ -1,32 +1,46 @@
+import java.awt.AlphaComposite;
 import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.awt.RadialGradientPaint;
 import java.awt.geom.Area;
+import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
-import java.awt.geom.RoundRectangle2D.Float;
+import java.awt.image.BufferedImage;
 import java.util.List;
-
 
 public class LightSource {
   private Color color;
   private int intensity = 500;
   private int width, height;
+  private BufferedImage black;
 
   public LightSource(Color color, int width, int height) {
     this.color = color;
     this.width = width;
     this.height = height;
+    black = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+    Graphics g = black.createGraphics();
+    g.setColor(Color.BLACK);
+    g.fillRect(0, 0, width, height);;
   }
 
   public void update(int x, int y, List<RoundRectangle2D.Float> shapes, double intensity, Graphics2D g) {
     Area shadows = generateShadows(x, y, shapes);
+    Area light = new Area(new Rectangle2D.Float(0,0,black.getWidth(), black.getHeight()));
+    light.subtract(shadows);
     
+    g.drawImage(black, 0, 0, null);
+    
+    g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC));
+    
+    g.setClip(light);
     float[] foo = { 0, 1f };
     Color[] bar = { color, new Color(0,0,0,255) };
     g.setPaint(new RadialGradientPaint(x, y, 100, foo, bar));
-    g.fillRect(0, 0, width, height);
-//    g.fillOval(x - 100, y - 100, 200, 200);
+//    g.fillRect(0, 0, width, height);
+    g.fillOval(x - 100, y - 100, 200, 200);
     
     g.setColor(Color.BLACK);
 //    g.fillOval(x - 200, y - 200, 400, 400);
