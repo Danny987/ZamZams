@@ -12,7 +12,7 @@ public class CollisionMap
   public void BuildcollisionMap(House curHouse)
   {
     collisionMap = new ArrayList<Tile>(curHouse.tileList);
-    zombieMap = new ArrayList<Zombie>(curHouse.zombieList);
+    zombieMap = curHouse.zombieList;
     collisionMap.add(new Tile('W', curHouse.getHouseWidth(), 1, 0, 0));
     collisionMap.add(new Tile('W', 1, curHouse.getHouseLength(), 0, 0));
     collisionMap.add(new Tile('W', curHouse.getHouseWidth(), 1, 0,

@@ -1,13 +1,15 @@
-/**
- * ZombieHouse - a zombie survival game written in Java for CS 351.
- * 
- * Team members:
- * Ramon A. Lovato
- * Danny Gomez
- * James Green
- * Marcos Lemus
- * Mario LoPrinzi
- */
+import application.Sound2D;
+
+/******************************************************************************/
+/* ZombieHouse - a zombie survival game written in Java for CS 351.           */
+/*                                                                            */
+/* Team members:                                                              */
+/* Ramon A. Lovato                                                            */
+/* Danny Gomez                                                                */
+/* James Green                                                                */
+/* Marcos Lemus                                                               */
+/* Mario LoPrinzi                                                             */
+/******************************************************************************/
 
 /**
  * ZombieHouse's main class.
@@ -22,9 +24,11 @@
 public class ZombieHouse {
     // Provide permanent references to active instances of the various modules.
     private ZombieMainGame game;
-    private ZombieFrame window;
-    // A thread lock for the GUI processes.
+    private volatile ZombieFrame window;
+    private volatile Sound2D sounds;
+    // A thread lock for the multithreaded processes.
     private final Object windowLock = new Object();
+    private final Object soundLock = new Object();
     
     /**
      * ZombieHouse's default constructor.
@@ -93,29 +97,23 @@ public class ZombieHouse {
     }
     
     /**
+     * Start the sound module.
+     */
+    private void startSound() {
+        // Instantiate the sound module on a new thread.
+        sounds = new Sound2D();
+        game.setSound(sounds);
+        Thread soundThread = new Thread(sounds);
+        soundThread.start();
+    }
+    
+    /**
      * Hands off primary control to ZombieMainGame. Called after initialization
      * routines complete.
      */
     private void relinquishControl() {
         game.takeControl();
     }
-    
-//    /**
-//     * Start the graphics engine.
-//     */
-//    private void startGraphics() {
-//        synchronized (windowLock) {
-//            try {
-//                windowLock.wait();
-//            } catch (InterruptedException ex) {
-//                ex.printStackTrace();
-//            }
-//        }
-//        int width = window.getSize().width;
-//        int height = window.getSize().height;
-////        GameGraphics graphics = new GameGraphics(width, height);
-////        game.linkToGraphics(graphics);
-//    }
 
 	/**
 	 * ZombieHouse's main method.
@@ -127,9 +125,9 @@ public class ZombieHouse {
         
         zombieHouse.startGUI();
         zombieHouse.startMainGame();
-        zombieHouse.setFrame();
         zombieHouse.startParser();
-        
+        zombieHouse.setFrame();
+        zombieHouse.startSound();
         // Once the initialization routines are complete, ZombieHouse hands off
         // primary control to ZombieMainGame.
         zombieHouse.relinquishControl();

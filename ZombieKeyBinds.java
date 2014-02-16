@@ -157,12 +157,16 @@ public class ZombieKeyBinds {
         frame.setPreferredSize(new java.awt.Dimension(640, 480));
         frame.setBackground(java.awt.Color.BLACK);
         JPanel panel = new JPanel();
+        assert (panel != null);
         panel.setPreferredSize(new java.awt.Dimension(640, 480));
         panel.setOpaque(true);
+        assert (panel.isOpaque());
         frame.setContentPane(panel);
         ZombieKeyBinds binds = new ZombieKeyBinds(panel);
+        assert (binds != null);
         frame.pack();
         frame.setVisible(true);
+        assert (frame.isShowing());
     }
 
 }

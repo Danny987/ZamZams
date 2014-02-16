@@ -10,8 +10,13 @@
 
 import java.awt.*;
 
+import application.Sound2D;
+
+
 public class Player extends Character
 {
+  private byte soundCount = 10;
+  private byte runCount = 5;
   private float stamina = 0;
   private float staminaRegen = 0;
   private float sight = 0;
@@ -21,6 +26,7 @@ public class Player extends Character
   // 5 = northeast, 6 = southeast, 7 = southwest, 8 = northwest
   private int direction = 0;
   private boolean regenDelay = false;
+  private Sound2D sound;
 
   /**
    * @param newPos
@@ -33,11 +39,13 @@ public class Player extends Character
    *          speed relative to tile of how fast a player walks per second.
    * @param stamRegen
    *          rate at which stamina recovers
+   * @return 
    * 
    */
   public Player(float sight, float hear, float speed, float stamina,
       float stamRegen)
   {
+    this.sound = new Sound2D();
     this.stamina = stamina;
     this.currentStamina = stamina * FRAMERATE / 2;
     this.hear = hear;
@@ -118,6 +126,11 @@ public class Player extends Character
 
       if (!sprint || currentStamina <= 0 || regenDelay)
       {
+        if(soundCount > 10)
+        {
+        sound.playRunSound(false);
+        soundCount = 0;
+        }
         moved = mover(leftRight, upDown, this.speed);
         if (currentStamina <= 0)
         {
@@ -136,9 +149,15 @@ public class Player extends Character
       else
       {
         // sprinting speed change
+        if(soundCount > 5)
+        {
+        sound.playRunSound(false);
+        soundCount = 0;
+        }
         moved = mover(leftRight, upDown, (2 * this.speed));
         currentStamina--;
       }
+      soundCount++;
     }
 
     if (moved == 1)

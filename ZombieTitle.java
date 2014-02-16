@@ -39,8 +39,11 @@ public class ZombieTitle extends JPanel {
     
     /**
      * Default constructor.
+     * 
+     * @param width Width of the frame.
+     * @param height Height of the frame.
      */
-    public ZombieTitle() {
+    public ZombieTitle(int width, int height) {
         super(new BorderLayout());
         startTime = elapsedTime = System.currentTimeMillis();
         setBackground(Color.BLACK);
@@ -48,6 +51,8 @@ public class ZombieTitle extends JPanel {
         try {
             titleBackground = new ImageIcon(this.getClass().getResource(
                     "/images/title-screen.png")).getImage();
+            titleBackground = titleBackground.getScaledInstance(
+                            width, height, Image.SCALE_SMOOTH);
             startButtonPlain = new ImageIcon(this.getClass().getResource(
                     "/images/start-button.png")).getImage();
             startButtonSelected = new ImageIcon(this.getClass().getResource(
@@ -146,15 +151,4 @@ public class ZombieTitle extends JPanel {
         g.setColor(Color.GREEN);
         g.drawString("time since infection: " + getTime(), 380, 550);
     }
-
-    /**
-     * ZombieTitle's main method - used for testing.
-     * 
-     * @param args String array of command-line arguments.
-     */
-    public static void main(String[] args) {
-        // TODO Auto-generated method stub
-
-    }
-
 }

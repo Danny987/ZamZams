@@ -63,6 +63,25 @@ public class ZombieLevel {
     }
     
     /**
+     * Changes a single tile to a trap tile.
+     * 
+     * @param x X-coordinate of tile to modify.
+     * @param y Y-coordinate of tile to modify.
+     * @return true if drop succeeded; false otherwise.
+     */
+    public boolean dropTrap(int x, int y) {
+        // Valid on any floor tile.
+        if (layout[x][y].getChar() == '.') {
+            layout[x][y] = new Tile('.', 1, 1, x, y);
+            // Rebuild the collision map.
+            house.player.buildMap(house);
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    /**
      * Changes a single tile to a blackened floor tile.
      * 
      * @param x X-coordinate of tile to modify.
@@ -73,6 +92,8 @@ public class ZombieLevel {
         // Exterior walls cannot be modified.
         if (layout[x][y].getChar() != 'W') {
             layout[x][y] = new Tile('B', 1, 1, x, y);
+            // Rebuild the collision map.
+            house.player.buildMap(house);
             return true;
         } else {
             return false;
@@ -93,6 +114,7 @@ public class ZombieLevel {
         }
         // Redirect layout to point to the new array.
         layout = newLayout;
+        // TODO: revert player and zombies.
     }
     
     /**
