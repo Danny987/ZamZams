@@ -6,13 +6,13 @@
  *then call initHouse, takes House object and some int, 0 for now.
  **************************************/
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.Point;
-import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
+import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -29,18 +29,21 @@ public class GameGraphics extends JPanel {
   private BufferedImage background;
   private BufferedImage characters;
   private BufferedImage lights;
+  private BufferedImage HUD;
+  private BufferedImage black;
 
   private Graphics2D backgroundGraphics;
   private Graphics2D charactersGraphics;
   private Graphics2D lightsGraphics;
+  private Graphics2D HUDGraphics;
 
-  public List<Shape> shapes = new ArrayList<>();
+  public List<RoundRectangle2D.Float> shapes = new ArrayList<>();
   public List<LightSource> lightSources = new ArrayList<>();
-  
+
   private House house;
 
   private BufferedImage sprites;
-  
+
   public enum Animation {
     WALKING, STANDING
   }
@@ -50,11 +53,6 @@ public class GameGraphics extends JPanel {
   }
 
   public GameGraphics(int width, int height) {
-    LightSource player = new LightSource(Color.RED);
-    LightSource fire = new LightSource(Color.ORANGE);
-    lightSources.add(player);
-    lightSources.add(fire);
-    
     setSize(width, height);
   }
 
@@ -74,18 +72,24 @@ public class GameGraphics extends JPanel {
     int width = house.getHouseWidth() * 50;
     int height = house.getHouseLength() * 50;
 
-    if (width < 1 || height < 1)
-      return false;
-    else {
-      background = new BufferedImage(height, width, BufferedImage.TYPE_INT_ARGB);
-      characters = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-      lights = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+    background = new BufferedImage(height, width, BufferedImage.TYPE_INT_ARGB);
+    characters = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+    lights = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+    HUD = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+    black = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 
-      backgroundGraphics = background.createGraphics();
-      charactersGraphics = characters.createGraphics();
-      lightsGraphics = lights.createGraphics();
+    backgroundGraphics = background.createGraphics();
+    charactersGraphics = characters.createGraphics();
+    lightsGraphics = lights.createGraphics();
+    HUDGraphics = HUD.createGraphics();
 
-    }
+    charactersGraphics.setBackground(new Color(0, 0, 0, 0));
+    HUDGraphics.setBackground(new Color(0, 0, 0, 0));
+    lightsGraphics.setBackground(new Color(0, 0, 0, 0));
+    
+    Graphics g = black.createGraphics();
+    g.setColor(Color.BLACK);
+    g.fillRect(0, 0, black.getWidth(), black.getHeight());
 
     BufferedImage sprite = null;
     int mapWidth = house.getHouseWidth();
@@ -93,11 +97,6 @@ public class GameGraphics extends JPanel {
 
     for (int x = 0; x < mapWidth; x++) {
       for (int y = 0; y < mapHeight; y++) {
-        // if(mapLayout[y][x] != floorTile){
-        // redLight.addShapes(new Rectangle2D.Float(50*x, 50*y, 50, 50));
-        // }
-
-        // redLight.changePosition(100, 250);
 
         // /////////////////////////////////////////////////////////
         // Wall Corners
@@ -143,104 +142,111 @@ public class GameGraphics extends JPanel {
         backgroundGraphics.drawImage(sprite, 50 * x, 50 * y, null);
       }
     }
-    for(Tile tile: house.tileList){
-//      if(tile.getChar() == tile.)
+
+    for(Tile t: house.tileList){
+      shapes.add(new RoundRectangle2D.Float(t.getX(), t.getY(), t.getWidth(), t.getHeight(), 0, 0));
     }
+    
+    LightSource player = new LightSource(new Color(0,255,0,0), lights.getWidth(), lights.getHeight());
+    LightSource fire = new LightSource(Color.ORANGE, lights.getWidth(), lights.getHeight());
+    lightSources.add(player);
+    lightSources.add(fire);
+    
+    update();
     return true;
   }
   
-  public void explode(ZombieTrap trap){
-    //get which fire trap is going to explode and check around it.
+  public void explode(ZombieTrap trap) {
+    // get which fire trap is going to explode and check around it.
   }
-
-//  public boolean drawImage() {
-//    // charactersGraphics.drawImage(null, point.x, point.y, null);
-//    // charactersGraphics.fillRect(point.x, point.y, 10, 10);
-//    light.init();
-//    light.changePosition(point.x, point.y);
-//    lights = light.updateLightmap();
-//    repaint();
-//    return false;
-//  }
 
   private boolean loadImages() throws MissingResourceException, IOException {
     sprites = ImageIO.read(new File("sprites.png"));
+    // largeSprite = sprites.getSubimage(0, 0, 1800, 300);
+    // mediumSprite = sprites.getSubimage(0, 300, 150, 150);
+    // smallSprite = null;
     // wall = ImageIO.read(new File("Walls.png"));
     // corner = ImageIO.read(new File("Corner.png"));
     return false;
   }
 
-  public void update(){
+  public void update() {
     List<Zombie> zombies = house.zombieList;
     Rectangle2D box;
     int x, y, width, height;
-    charactersGraphics.setColor(Color.RED);
-    
-    for(Tile t: house.tileList){
-      box = t.getHitbox();
-      x = (int)box.getX();
-      y = (int)box.getY();
-      width = (int) box.getWidth();
-      height = (int) box.getHeight();
-      
+
+    charactersGraphics.clearRect(0, 0, characters.getWidth(), characters.getHeight());
+
+    backgroundGraphics.setColor(Color.BLUE);
+    for (Tile t : house.tileList) {
+      x = (int) t.getX() * 50;
+      y = (int) t.getY() * 50;
+      width = (int) t.getWidth() * 50;
+      height = (int) t.getHeight() * 50;
       backgroundGraphics.fillRect(x, y, width, height);
     }
-    
-    for(Zombie z: zombies){
+
+    charactersGraphics.setColor(Color.RED);
+    for (Zombie z : zombies) {
       box = z.getHitbox();
-      x = (int)box.getX();
-      y = (int)box.getY();
-      width = (int)box.getWidth();
-      height = (int)box.getHeight();
+      x = (int) box.getX();
+      y = (int) box.getY();
       charactersGraphics.fillRect(x, y, 50, 50);
     }
-    
+
     Point p = house.player.getPosition();
     x = p.x;
-    y = p.x;
+    y = p.y;
+    HUDGraphics.clearRect(0, 0, this.getWidth(), this.getHeight());
+    HUDGraphics.setColor(Color.ORANGE);
+    HUDGraphics.fillRect(10, this.getHeight() - 40, 20, 20);
+//    HUDGraphics.drawString(Integer.toString(house.player.getFireTrapCount()), 40, this.getHeight() - 40);
+
     charactersGraphics.setColor(Color.GREEN);
-    charactersGraphics.fillRect(x, y, 50, 50);
+    charactersGraphics.fillRoundRect(x, y, 50, 50, 10, 10);
+    // charactersGraphics.fillRect(x, y, 50, 50);
     
+    updateLight();
+    
+    repaint();
+  }
+
+  //update LightSource
+  public void updateLight(){
+    Point playerPosition = house.player.getPosition();
+    lightsGraphics.drawImage(black, 0, 0, null);
+    lightsGraphics.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC));
+//    lightSources.get(1).update(500, 500, shapes, 0, lightsGraphics);
+    lightSources.get(0).update(playerPosition.x + 25, playerPosition.y, shapes, house.player.getSight(), lightsGraphics);
   }
   
+  
   @Override
-  public void paint(Graphics g) {
+  public void paintComponent(Graphics g) {
     int backgroundX, backgroundY;
-    backgroundY = backgroundX = 0;
+    backgroundX = backgroundY = 0;
 
-    // Center player on screen
-    if (this.getWidth() > background.getWidth()) {
-      backgroundX = (this.getWidth() - background.getWidth()) / 2;
-    }
-    else {
-      int xDisp = house.player.getPosition().x - characters.getWidth() / 2;
+    Point p;
+    p = house.player.getPosition();
 
-      backgroundX = -xDisp;
-      if (background.getWidth() + backgroundX < this.getWidth()) {
-        backgroundX = this.getWidth() - background.getWidth();
-      }
-      else if (backgroundX > 0)
-        backgroundX = 0;
-    }
+    backgroundX = this.getWidth() / 2 - p.x;
+    backgroundY = this.getHeight() / 2 - p.y;
 
-    if (this.getHeight() > background.getHeight()) {
-      backgroundY = (this.getHeight() - background.getHeight()) / 2;
-    }
-    else {
-      int yDisp = house.player.getPosition().y - characters.getHeight() / 2;
+    if (backgroundX > 0)
+      backgroundX = 0;
+    else if (backgroundX + background.getWidth() < this.getWidth())
+      backgroundX -= backgroundX + background.getWidth() - this.getWidth();
 
-      backgroundY = -yDisp;
-      if (background.getHeight() + backgroundY < this.getHeight()) {
-        backgroundY = this.getHeight() - background.getHeight();
-      }
-      else if (backgroundY > 0)
-        backgroundY = 0;
-    }
-
-    g.setColor(Color.BLACK);
-    g.fillRect(0, 0, this.getWidth(), this.getHeight());
+    if (backgroundY > 0)
+      backgroundY = 0;
+    else if (backgroundY + background.getHeight() < this.getHeight())
+      backgroundY -= backgroundY + background.getHeight() - this.getHeight();
+    
+    g.setClip(new Rectangle2D.Float(0, 0, this.getWidth(), this.getHeight()));
+    
     g.drawImage(background, backgroundX, backgroundY, null);
     g.drawImage(characters, backgroundX, backgroundY, null);
     g.drawImage(lights, backgroundX, backgroundY, null);
+    g.drawImage(HUD, 0, 0, null);
   }
 }
