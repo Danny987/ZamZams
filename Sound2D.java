@@ -293,7 +293,7 @@ public class Sound2D extends Application implements Runnable
       public void changed(ObservableValue<? extends Boolean> arg0,
           Boolean arg1, Boolean arg2)
       {
-        System.out.println("Hahaha");
+        player.stop();
         if (menuSwitch.get())
         {
           player = menuBuilder.media(openScreen).build();
