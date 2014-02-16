@@ -1,9 +1,7 @@
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 public class House {
@@ -27,12 +25,18 @@ public class House {
 
 	//list of zombie objects
 	ArrayList<Zombie> zombieList = new ArrayList<>();
+	//backup copy of zombie list
+	ArrayList<Zombie> zombieList_backup = new ArrayList<>();
 
 	//list of tile objects
 	ArrayList<Tile> tileList = new ArrayList<>();
+	//backup tile list
+	ArrayList<Tile> tileList_backup = new ArrayList<>();
 	
 	//create player
 	Player player;
+	//backup player
+	Player player_backup;
 
 	Random rand = new Random();
 
@@ -128,14 +132,17 @@ public class House {
 						tileLayout[x][y].setTile('S', width, height,x,y);
 						//add it to the obj list
 						tileList.add(new Tile('S', width+1, height+1,x,y));
+						tileList_backup.add(new Tile('S', width+1, height+1,x,y));
 					}
 					else if(area > 9){
 						tileLayout[x][y].setTile('L', width, height,x,y);
 						tileList.add(new Tile('L', width+1, height+1,x,y));
+						tileList_backup.add(new Tile('L', width+1, height+1,x,y));
 					}
 					else{
 						tileLayout[x][y].setTile('M', width, height,x,y);
 						tileList.add(new Tile('M', width+1, height+1,x,y));
+						tileList_backup.add(new Tile('M', width+1, height+1,x,y));
 					}
 				}
 				else{
@@ -150,11 +157,12 @@ public class House {
 	//create a zombie object and add it to the zombie list
 	public void createZombie(int x, int y, int smell, float speed, int walkType, int probA, int probB)
 	{
+		//get zombie position
 		Point position = new Point(x,y);
-		//create zombie object
-		Zombie zombie = new Zombie(position, smell, speed, walkType, probA, probB);
+
 		//add zombie to list
-		zombieList.add(zombie);
+		zombieList.add(new Zombie(position, smell, speed, walkType, probA, probB));
+		zombieList_backup.add(new Zombie(position, smell, speed, walkType, probA, probB));
 	}
 
 	//creates an inner wall
@@ -193,6 +201,7 @@ public class House {
 					tileLayout[c1][y].setTile('V',1,length,c1,y);
 					//add the wall to the obj list
 					tileList.add(new Tile('V',1,length+1,c1,y));
+					tileList_backup.add(new Tile('V',1,length+1,c1,y));
 				}
 				else
 				{
@@ -219,6 +228,7 @@ public class House {
 				{
 					tileLayout[x][c1].setTile('H', length, 1, x, c1);
 					tileList.add(new Tile('H',length+1, 1, x, c1));
+					tileList_backup.add(new Tile('H',length+1, 1, x, c1));
 				}
 				else
 				{
@@ -236,6 +246,7 @@ public class House {
 		{
 			tileLayout[x][y].setTile('F',1 ,1, x, y);
 			tileList.add(new Tile('F',1 ,1, x, y));
+			tileList_backup.add(new Tile('F',1 ,1, x, y));
 		}
 		else
 		{
@@ -247,6 +258,7 @@ public class House {
 	public boolean createPlayer(float sight, float hear, float speed, float stamina, float regen) {
 		this.exitDistance = sight*2;
 		player = new Player(sight, hear, speed, stamina,regen);
+		player_backup = new Player(sight, hear, speed, stamina,regen);
 		return true;
 	}
 
@@ -281,14 +293,10 @@ public class House {
 				//pick a random tile
 				int r = rand.nextInt(tileList.size()+1);
 
-				//set zombie in houselayout
-				//tileLayout[tileList.get(r).x][tileList.get(r).y].setTile('Z', 1, 1, tileList.get(r).x, tileList.get(r).y);
-
 				//set position in zombie object
 				zombieList.get(i).setPosition(tileList.get(r));
+				zombieList_backup.get(i).setPosition(tileList.get(r));
 			}
-			//if the zombie had an x and y
-			//tileLayout[position.x][position.y].setTile('Z', 1, 1, position.x, position.y);
 		}
 		return true;
 	}
@@ -449,6 +457,7 @@ public class House {
 			
 			//set position in player object
 			player.setPosition(playerPoint);
+			player_backup.setPosition(playerPoint);
 
 			//update the tile array with the exit and player
 			tileLayout[exitPoint.x][exitPoint.y].setTile('E', 1, 1, exitPoint.x, exitPoint.y);
@@ -456,6 +465,7 @@ public class House {
 
 			//add exit to tile obj list
 			tileList.add(new Tile('E',1 ,1, exit_X, exit_Y));
+			tileList_backup.add(new Tile('E',1 ,1, exit_X, exit_Y));
 
 			return true; //all went well!
 		}
