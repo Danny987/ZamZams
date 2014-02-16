@@ -6,10 +6,15 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Random;
 
 import javafx.application.Application;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaPlayerBuilder;
@@ -39,16 +44,16 @@ public class Sound2D extends Application implements Runnable
   private File[] stepArray;
   private File[] runArray;
 
-  private MediaPlayerBuilder builder;
+  private MediaPlayerBuilder menuBuilder;
+  private MediaPlayerBuilder gameBuilder;
+  static BooleanProperty menuSwitch;
   private MediaPlayer player;
   ArrayList<Media> musicList;
   private Random rand;
 
-  public void leaveMenu()
+  public void switchMenu()
   {
-    player.stop();
-    player = builder.media(musicList.get(rand.nextInt(musicList.size())))
-        .build();
+    menuSwitch.set(!menuSwitch.get());
   }
 
   public Sound2D()
@@ -57,7 +62,7 @@ public class Sound2D extends Application implements Runnable
     try
     // Trying to load zombie sfx
     {
-      File moanFile = new File("ZombieMoan.wav");
+      File moanFile = new File("sounds/ZombieMoan.wav");
       AudioInputStream stream = AudioSystem.getAudioInputStream(moanFile);
       zombieFormat = stream.getFormat();
       byte[] array = getSamples(stream);
@@ -77,7 +82,7 @@ public class Sound2D extends Application implements Runnable
     try
     // Trying to load fire sfx
     {
-      File blastFile = new File("FireBlast.wav");
+      File blastFile = new File("sounds/FireBlast.wav");
       AudioInputStream stream = AudioSystem.getAudioInputStream(blastFile);
       fireFormat = stream.getFormat();
       byte[] array = getSamples(stream);
@@ -94,7 +99,7 @@ public class Sound2D extends Application implements Runnable
       System.out.println("Fire Sound File does not exist; turning off sfx");
       sfx = false;
     }
-    File footFile = new File("footstep");
+    File footFile = new File("sounds/footstep");
     stepArray = footFile.listFiles();
   }
 
@@ -222,14 +227,19 @@ public class Sound2D extends Application implements Runnable
     dummy.start();
   }
 
-  public static void main(String[] args)
+  public static void main(String[] args) throws InterruptedException
   {
     Sound2D man = new Sound2D();
     Thread t = new Thread(man);
     t.start();
     System.out.println("launch");
     man.playDistSound(new Point(1, 1), new Point(0, 0), 0, true);
-    man.playRunSound(false);
+    t.join();
+    for (int i = 0; i < 360; i++)
+    {
+      man.playRunSound(false);
+    }
+    man.switchMenu();
   }
 
   @Override
@@ -239,25 +249,39 @@ public class Sound2D extends Application implements Runnable
     test.launch();
   }
 
-  public void start(Stage primaryStage)
+  public void start(Stage primaryStage) throws IOException, URISyntaxException
   {
     musicList = new ArrayList<>();
-    // JavaFX should be initialized
+    File musicFile = new File("src/gameMusic");
+    String file = "file:///" + musicFile.getAbsolutePath().replace('\\', '/');
+    for (String i : musicFile.list())
+    {
+      if(!i.endsWith(".mp3")) continue;
+      musicList.add(new Media(file + "/" + i));
+    }
+    final Media openScreen = new Media(file+"/menuMusic/EveningOfChaos.mp3");
+    menuSwitch = new SimpleBooleanProperty(true);
+    menuSwitch.addListener(new ChangeListener<Boolean>()
+    {
 
-    Media openScreen = new Media(
-        "file:///C:/Users/Kratok/workspace/SoundMaster/EveningOfChaos.mp3");
+      @Override
+      public void changed(ObservableValue<? extends Boolean> arg0,
+          Boolean arg1, Boolean arg2)
+      {
+        if (menuSwitch.get())
+        {
+          player = menuBuilder.build();
+        } else
+        {
+          player = gameBuilder.build();
+        }
 
-    Media musOne = new Media(
-        "file:///C:/Users/Kratok/workspace/SoundMaster/archipelago.mp3");
-    Media musTwo = new Media(
-        "file:///C:/Users/Kratok/workspace/SoundMaster/LostFrontier.mp3");
-    Media musThree = new Media(
-        "file:///C:/Users/Kratok/workspace/SoundMaster/Hush.mp3");
+      }
+    });
 
-    /*
-     * Attaches the 'on Ready, play' runnable to the builder
-     */
-    builder = MediaPlayerBuilder.create().onReady(new Runnable()
+    // Attaches the 'on Ready, play' runnable to the builder
+
+    menuBuilder = MediaPlayerBuilder.create().onReady(new Runnable()
     {
 
       @Override
@@ -265,7 +289,27 @@ public class Sound2D extends Application implements Runnable
       {
         player.play();
       }
-    }).// Adds the looping scheme to the builder for in game music
+    }).onEndOfMedia(new Runnable()
+    {
+
+      @Override
+      public void run()
+      {
+        player = menuBuilder.media(openScreen).build();
+
+      }
+    });
+    player = menuBuilder.media(openScreen).build();
+    gameBuilder = MediaPlayerBuilder.create().onReady(new Runnable()
+    {
+
+      @Override
+      public void run()
+      {
+        player.play();
+      }
+    }).
+    // Adds the looping scheme to the builder for in game music
         onEndOfMedia(new Runnable()
         {
 
@@ -273,16 +317,11 @@ public class Sound2D extends Application implements Runnable
           public void run()
           {
             int val = rand.nextInt(musicList.size());
-            System.out.println("Changed to song" + val);
-            player = builder.media(musicList.get(val)).build();
+            System.out.println("Changed to song " + val);
+            player = gameBuilder.media(musicList.get(val)).build();
           }
         });
-    player = builder.media(musOne).build();
-    // For cycling through the different available mp3 files
-    musicList.add(musOne);
-    musicList.add(musTwo);
-    musicList.add(musThree);
-    System.out.println("End of line");
+
   }
 
   class DistSound implements Runnable
@@ -314,54 +353,54 @@ public class Sound2D extends Application implements Runnable
     {
       System.out.println("Gragh this is a moan");
       if (sfx)
-      { 
-        //Player Direction
+      {
+        // Player Direction
         Point leftEar = new Point();
         Point rightEar = new Point();
-        switch(faceDegree)
+        switch (faceDegree)
         {
-        case 1://= north
-          leftEar.move(player.x-1, player.y);  
-          rightEar.move(player.x+1, player.y);
+        case 1:// = north
+          leftEar.move(player.x - 1, player.y);
+          rightEar.move(player.x + 1, player.y);
           break;
-        case 2://= east
-          leftEar.move(player.x, player.y-1);
-          rightEar.move(player.x, player.y+1);
+        case 2:// = east
+          leftEar.move(player.x, player.y - 1);
+          rightEar.move(player.x, player.y + 1);
           break;
-        case 3://= south
-          leftEar.move(player.x+1, player.y);
-          rightEar.move(player.x-1, player.y);
+        case 3:// = south
+          leftEar.move(player.x + 1, player.y);
+          rightEar.move(player.x - 1, player.y);
           break;
-        case 4://= west
-          leftEar.move(player.x, player.y+1);
-          rightEar.move(player.x, player.y-1);
+        case 4:// = west
+          leftEar.move(player.x, player.y + 1);
+          rightEar.move(player.x, player.y - 1);
           break;
-        case 5://= northeast
-          leftEar.move(player.x-1, player.y-1);
-          rightEar.move(player.x+1, player.y+1);
+        case 5:// = northeast
+          leftEar.move(player.x - 1, player.y - 1);
+          rightEar.move(player.x + 1, player.y + 1);
           break;
-        case 6://= southeast
-          leftEar.move(player.x+1, player.y-1);
-          rightEar.move(player.x-1, player.y+1);
+        case 6:// = southeast
+          leftEar.move(player.x + 1, player.y - 1);
+          rightEar.move(player.x - 1, player.y + 1);
           break;
-        case 7://= southwest
-          leftEar.move(player.x+1, player.y-1);
-          rightEar.move(player.x-1, player.y+1);
+        case 7:// = southwest
+          leftEar.move(player.x + 1, player.y - 1);
+          rightEar.move(player.x - 1, player.y + 1);
           break;
-        case 8://= northwest
-          leftEar.move(player.x+1, player.y+1);
-          rightEar.move(player.x-1, player.y-1);
+        case 8:// = northwest
+          leftEar.move(player.x + 1, player.y + 1);
+          rightEar.move(player.x - 1, player.y - 1);
           break;
         }
         double distLeft = source.distance(leftEar);
         double distRight = source.distance(rightEar);
         double distTrue = source.distance(player);
-        double changeWhole = 1/distTrue;
-        double change3D = distRight/distLeft;
-        int offset = 2; //offset 2 is right, offset 1 is left;
+        double changeWhole = 1 / distTrue;
+        double change3D = distRight / distLeft;
+        int offset = 2; // offset 2 is right, offset 1 is left;
         if (distRight > distLeft)
         {
-          change3D = 1/change3D;
+          change3D = 1 / change3D;
           offset--;
         }
         short[] returnSample = new short[sample.length];
@@ -369,11 +408,11 @@ public class Sound2D extends Application implements Runnable
         {
           if (offset == 2)
           {
-            returnSample[i] = (short) (sample[i] * change3D*changeWhole);
+            returnSample[i] = (short) (sample[i] * change3D * changeWhole);
             offset = 0;
           } else
           {
-            returnSample[i] = (short) (sample[i]*changeWhole);
+            returnSample[i] = (short) (sample[i] * changeWhole);
           }
           offset++;
         }
