@@ -9,10 +9,10 @@
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.Point;
-import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
+import java.awt.geom.RoundRectangle2D;
+import java.awt.geom.RoundRectangle2D.Float;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -36,7 +36,7 @@ public class GameGraphics extends JPanel {
   private Graphics2D lightsGraphics;
   private Graphics2D HUDGraphics;
 
-  public List<Shape> shapes = new ArrayList<>();
+  public List<RoundRectangle2D.Float> shapes = new ArrayList<>();
   public List<LightSource> lightSources = new ArrayList<>();
 
   private House house;
@@ -57,11 +57,6 @@ public class GameGraphics extends JPanel {
   }
 
   public GameGraphics(int width, int height) {
-    LightSource player = new LightSource(Color.RED);
-    LightSource fire = new LightSource(Color.ORANGE);
-    lightSources.add(player);
-    lightSources.add(fire);
-
     setSize(width, height);
   }
 
@@ -81,23 +76,19 @@ public class GameGraphics extends JPanel {
     int width = house.getHouseWidth() * 50;
     int height = house.getHouseLength() * 50;
 
-    if (width < 1 || height < 1)
-      return false;
-    else {
-      background = new BufferedImage(height, width, BufferedImage.TYPE_INT_ARGB);
-      characters = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-      lights = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-      HUD = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+    background = new BufferedImage(height, width, BufferedImage.TYPE_INT_ARGB);
+    characters = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+    lights = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+    HUD = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 
-      backgroundGraphics = background.createGraphics();
-      charactersGraphics = characters.createGraphics();
-      lightsGraphics = lights.createGraphics();
-      HUDGraphics = HUD.createGraphics();
+    backgroundGraphics = background.createGraphics();
+    charactersGraphics = characters.createGraphics();
+    lightsGraphics = lights.createGraphics();
+    HUDGraphics = HUD.createGraphics();
 
-      charactersGraphics.setBackground(new Color(0,0,0,0));
-      HUDGraphics.setBackground(new Color(0, 0, 0, 0));
-      lightsGraphics.setBackground(new Color(0,0,0,0));
-    }
+    charactersGraphics.setBackground(new Color(0, 0, 0, 0));
+    HUDGraphics.setBackground(new Color(0, 0, 0, 0));
+    lightsGraphics.setBackground(new Color(0, 0, 0, 0));
 
     BufferedImage sprite = null;
     int mapWidth = house.getHouseWidth();
@@ -150,6 +141,16 @@ public class GameGraphics extends JPanel {
         backgroundGraphics.drawImage(sprite, 50 * x, 50 * y, null);
       }
     }
+
+    for(Tile t: house.tileList){
+      shapes.add(new RoundRectangle2D.Float(t.getX(), t.getY(), t.getWidth(), t.getHeight(), 0, 0));
+    }
+    
+    LightSource player = new LightSource(new Color(0,255,0,0), lights.getWidth(), lights.getHeight());
+    LightSource fire = new LightSource(Color.ORANGE, lights.getWidth(), lights.getHeight());
+    lightSources.add(player);
+    lightSources.add(fire);
+    
     update();
     return true;
   }
@@ -160,9 +161,9 @@ public class GameGraphics extends JPanel {
 
   private boolean loadImages() throws MissingResourceException, IOException {
     sprites = ImageIO.read(new File("sprites.png"));
-//    largeSprite = sprites.getSubimage(0, 0, 1800, 300);
-//    mediumSprite = sprites.getSubimage(0, 300, 150, 150);
-//    smallSprite = null;
+    // largeSprite = sprites.getSubimage(0, 0, 1800, 300);
+    // mediumSprite = sprites.getSubimage(0, 300, 150, 150);
+    // smallSprite = null;
     // wall = ImageIO.read(new File("Walls.png"));
     // corner = ImageIO.read(new File("Corner.png"));
     return false;
@@ -172,9 +173,9 @@ public class GameGraphics extends JPanel {
     List<Zombie> zombies = house.zombieList;
     Rectangle2D box;
     int x, y, width, height;
-    
+
     charactersGraphics.clearRect(0, 0, characters.getWidth(), characters.getHeight());
-    
+
     backgroundGraphics.setColor(Color.BLUE);
     for (Tile t : house.tileList) {
       x = (int) t.getX() * 50;
@@ -196,40 +197,47 @@ public class GameGraphics extends JPanel {
     x = p.x;
     y = p.y;
 
+    lightsGraphics.setClip(new Rectangle2D.Float(0, 0, lights.getWidth(), lights.getHeight()));
+    lightsGraphics.clearRect(0, 0, lights.getWidth(), lights.getHeight());
+    lightSources.get(0).update(x + 25, y + 25, shapes, 0, lightsGraphics);
+
     HUDGraphics.clearRect(0, 0, this.getWidth(), this.getHeight());
     HUDGraphics.setColor(Color.ORANGE);
     HUDGraphics.fillRect(10, this.getHeight() - 40, 20, 20);
-    HUDGraphics.drawString(Integer.toString(house.player.getFireTrapCount()), 40, this.getHeight() - 40);
-    
+//    HUDGraphics.drawString(Integer.toString(house.player.getFireTrapCount()), 40, this.getHeight() - 40);
+
     charactersGraphics.setColor(Color.GREEN);
-    charactersGraphics.fillRect(x, y, 50, 50);
+    charactersGraphics.fillRoundRect(x, y, 50, 50, 10, 10);
+    // charactersGraphics.fillRect(x, y, 50, 50);
     repaint();
   }
 
   @Override
-  public void paint(Graphics g) {
+  public void paintComponent(Graphics g) {
     int backgroundX, backgroundY;
     backgroundX = backgroundY = 0;
-    
+
     Point p;
     p = house.player.getPosition();
-    
-    backgroundX = this.getWidth()/2 - p.x;
-    backgroundY = this.getHeight()/2 - p.y;
 
-    if(backgroundX > 0) backgroundX = 0;
-    else if(backgroundX + background.getWidth() < this.getWidth())
+    backgroundX = this.getWidth() / 2 - p.x;
+    backgroundY = this.getHeight() / 2 - p.y;
+
+    if (backgroundX > 0)
+      backgroundX = 0;
+    else if (backgroundX + background.getWidth() < this.getWidth())
       backgroundX -= backgroundX + background.getWidth() - this.getWidth();
-    
-    if(backgroundY > 0) backgroundY = 0;
-    else if(backgroundY + background.getHeight() < this.getHeight())
+
+    if (backgroundY > 0)
+      backgroundY = 0;
+    else if (backgroundY + background.getHeight() < this.getHeight())
       backgroundY -= backgroundY + background.getHeight() - this.getHeight();
     
-    g.setColor(Color.BLACK);
-    g.fillRect(0, 0, this.getWidth(), this.getHeight());
+    g.setClip(new Rectangle2D.Float(0, 0, this.getWidth(), this.getHeight()));
+    
     g.drawImage(background, backgroundX, backgroundY, null);
     g.drawImage(characters, backgroundX, backgroundY, null);
-    // g.drawImage(lights, backgroundX, backgroundY, null);
+    g.drawImage(lights, backgroundX, backgroundY, null);
     g.drawImage(HUD, 0, 0, null);
   }
 }

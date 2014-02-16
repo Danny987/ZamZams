@@ -1,291 +1,225 @@
 import java.awt.AlphaComposite;
 import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.awt.RadialGradientPaint;
-import java.awt.Shape;
 import java.awt.geom.Area;
 import java.awt.geom.Rectangle2D;
+import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.List;
 
 public class LightSource {
-	private double intensity = 0;
-	private Color color;
-	
-	//remove shapes list.
-	//Add container object
-	private List<Shape> shapes;
-//	private List<LightSource> lights = new ArrayList<>();
-	
-	private static BufferedImage lightmap;
-	private static Graphics2D lightmapGraphics;
-	
-	private int cx, cy;
+  private Color color;
+  private int intensity = 500;
+  private int width, height;
+  private BufferedImage black;
 
-	
-	//Remove lights!
-	public LightSource(Color color) {
-		this.color = color;
+  public LightSource(Color color, int width, int height) {
+    this.color = color;
+    this.width = width;
+    this.height = height;
+    black = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+    Graphics g = black.createGraphics();
+    g.setColor(Color.BLACK);
+    g.fillRect(0, 0, width, height);;
+  }
 
-//		lights.add(this);
-	}
-	
-	public void init() {
-		lightmap = new BufferedImage(500, 500, BufferedImage.TYPE_INT_ARGB);
-		lightmapGraphics = lightmap.createGraphics();
+  public void update(int x, int y, List<RoundRectangle2D.Float> shapes, double intensity, Graphics2D g) {
+    Area shadows = generateShadows(x, y, shapes);
+    Area light = new Area(new Rectangle2D.Float(0,0,black.getWidth(), black.getHeight()));
+    light.subtract(shadows);
+    
+    g.drawImage(black, 0, 0, null);
+    
+    g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC));
+    
+    g.setClip(light);
+    float[] foo = { 0, 1f };
+    Color[] bar = { color, new Color(0,0,0,255) };
+    g.setPaint(new RadialGradientPaint(x, y, 100, foo, bar));
+//    g.fillRect(0, 0, width, height);
+    g.fillOval(x - 100, y - 100, 200, 200);
+    
+    g.setColor(Color.BLACK);
+//    g.fillOval(x - 200, y - 200, 400, 400);
+    
+//    g.fill(light);
+    g.fill(shadows);
+    
+  }
 
-	}
+  private Area generateShadows(int x, int y, List<RoundRectangle2D.Float> shapes) {
+    Area shadows = new Area();
+    
+    float shapeX, shapeY, width, height, arcWidth, arcHeight;
 
-	
-	//Make bitmap!
-	public BufferedImage updateLightmap() {
-		lightmapGraphics.setBackground(new Color(0, 0, 0, 0));
-		lightmapGraphics.clearRect(0, 0, 900, 900);
+    for (RoundRectangle2D.Float s : shapes) {
+      shapeX = s.x * 50;
+      shapeY = s.y * 50;
+      width = s.width * 50;
+      height = s.height * 50;
+      arcWidth = s.arcwidth;
+      arcHeight = s.archeight;
+      
+      if(Math.sqrt((x - shapeX)*(x - shapeX) + (y - shapeY)*(y - shapeY)) < intensity){
+        if(arcHeight == arcWidth){
+          shadows.add(new Area(rectangleShadow(x, y, (int)shapeX, (int)shapeY, (int)width, (int)height)));
+        }
+      }
 
-//		for(LightSource l: lights){
-//			l.updateLight();
-//		}
-		
-		return lightmap;
-	}
+    }
 
-	public void changePosition(int cx, int cy){
-		this.cx = cx;
-		this.cy = cy;
-	}
-	
-	private void updateLight() {
-		Area shadows = generateShadows(cx, cy, intensity);
-		Area light = new Area(new Rectangle2D.Float(0, 0, 900, 900));
-		light.subtract(shadows);
+    return shadows;
+  }
 
-//		lightmapGraphics.setColor(Color.BLACK);
-//		lightmapGraphics.fillRect(0, 0, 900, 900);
-		
-		lightmapGraphics.setClip(light);
-		
-		
-		lightmapGraphics.setComposite(AlphaComposite.getInstance(AlphaComposite.DST_OVER));
+  private Polygon rectangleShadow(int x, int y, int shapeX, int shapeY, int width, int height) {
+    int[] xPoints = {0, 0, 0, 0, 0};
+    int[] yPoints = {0, 0, 0, 0, 0};
+    //Left side of screen
+    if (x > shapeX + width) {
+      
+      //top
+      if (y > shapeY + height) {
+        xPoints = new int[] {shapeX,
+                             shapeX,
+                             shapeX + width,
+                             shapeX + width - (x - (shapeX + width))*10,
+                             shapeX - (x - shapeX)*10};
+        
+        yPoints = new int[] {shapeY + height, 
+                             shapeY, 
+                             shapeY,
+                             shapeY - (y - shapeY)*10,
+                             shapeY + height - (y - (shapeY + height))*10};
+      }
+      
+      //bottom
+      else if (y < shapeY) {
+          xPoints = new int[] {shapeX,
+                               shapeX,
+                               shapeX + width,
+                               shapeX + width - (x - (shapeX + width))*10,
+                               shapeX - (x - shapeX)*10};
 
-//		lightmapGraphics.setColor(Color.BLACK);
-//		lightmapGraphics.fill(shadows);
+          yPoints = new int[] {shapeY, 
+                               shapeY + height, 
+                               shapeY + height,
+                               shapeY + height - (y - (shapeY + height))*10,
+                               shapeY - (y - shapeY)*10};
+      }
+      
+      //left
+      else {
+        xPoints = new int[]{shapeX + width, 
+                            shapeX, 
+                            shapeX, 
+                            shapeX + width, 
+                            shapeX + width - (x - (shapeX + width))*10, 
+                            shapeX + width - (x - (shapeX + width))*10};
+      
+        yPoints = new int[]{shapeY + height, 
+                            shapeY + height, 
+                            shapeY, 
+                            shapeY,
+                            shapeY - (y - shapeY)*10,
+                            shapeY + height - (y - (shapeY + height))*10};
+      } 
+    
+    }
 
-		float[] foo = { 0, 1f };
-		Color[] bar = { color, new Color(0,0,0,0) };
-		lightmapGraphics.setPaint(new RadialGradientPaint(cx, cy, 100, foo, bar));
-		lightmapGraphics.fillOval(cx - 100, cy - 100, 200, 200);
-		
-//		lightmapGraphics.setClip(null);
-//		lightmapGraphics.setColor(Color.BLACK);
-//		lightmapGraphics.fill(shadows);
-	
-	}
+      //Right side of screen
+    else if (x < shapeX) {
+        
+        //top
+        if (y > shapeY + height) {
+          xPoints = new int[] {shapeX,
+                               shapeX + width,
+                               shapeX + width,
+                               shapeX + width - (x - (shapeX + width))*10,
+                               shapeX - (x - shapeX)*10};
+          
+          yPoints = new int[] {shapeY, 
+                               shapeY, 
+                               shapeY + height,
+                               shapeY + height - (y - (shapeY + height))*10,
+                               shapeY - (y - shapeY)*10};
+        }
+        
+        //bottom
+        else if (y < shapeY) {
+            xPoints = new int[] {shapeX + width,
+                                 shapeX + width,
+                                 shapeX,
+                                 shapeX - (x - (shapeX))*10,
+                                 shapeX + width - (x - (shapeX + width))*10};
 
-	private Area generateShadows(int cx, int cy, double intensity) {
-		Area shadows = new Area();
+            yPoints = new int[] {shapeY, 
+                                 shapeY + height, 
+                                 shapeY + height,
+                                 shapeY + height - (y - (shapeY + height))*10,
+                                 shapeY - (y - shapeY)*10};
+        }
+        
+        //Right
+        else {
+          xPoints = new int[]{shapeX, 
+                              shapeX + width, 
+                              shapeX + width, 
+                              shapeX, 
+                              shapeX - (x - shapeX)*10, 
+                              shapeX - (x - shapeX)*10};
+        
+          yPoints = new int[]{shapeY, 
+                              shapeY, 
+                              shapeY + height, 
+                              shapeY + height,
+                              shapeY + height - (y - (shapeY + height))*10,
+                              shapeY - (y - (shapeY))*10};
+        
+        }
+      }
+    
+    //middle
+    else{
+      if(y > shapeY + height){
+        xPoints = new int[]{shapeX, 
+                            shapeX, 
+                            shapeX + width, 
+                            shapeX + width, 
+                            shapeX + width - (x - (shapeX + width))*10, 
+                            shapeX - (x - shapeX)*10};
 
-		for (Shape s : shapes) {
-			int xPos = s.getBounds().x;
-			int yPos = s.getBounds().y;
-			int width = 50;
-			int height = 50;
+        yPoints = new int[]{shapeY + height, 
+                            shapeY, 
+                            shapeY, 
+                            shapeY + height,
+                            shapeY + height - (y - (shapeY + height))*10,
+                            shapeY + height- (y - (shapeY + height))*10};
+      }
+      else if(y < shapeY){
+        xPoints = new int[]{shapeX, 
+                            shapeX, 
+                            shapeX + width,   
+                            shapeX + width, 
+                            shapeX + width - (x - (shapeX + width))*10, 
+                            shapeX - (x - shapeX)*10};
 
-			int[] xPoints = new int[5];
-			int[] yPoints = new int[5];
+        yPoints = new int[]{shapeY, 
+                            shapeY + height, 
+                            shapeY + height, 
+                            shapeY,
+                            shapeY - (y - shapeY)*10,
+                            shapeY - (y - shapeY)*10};
+      }
+    }
+    
+      
+    return new Polygon(xPoints, yPoints, xPoints.length);
+  }
 
-			// /////////////////////////////////////////////////////////////////////
-			// Left Side
-			// /////////////////////////////////////////////////////////////////////
-			if (cx > xPos + width / 2) {
+  private void circleShadow(RoundRectangle2D.Float shape) {
 
-				// //////////////////////////////////////////////////////////////////
-				// Above
-				// //////////////////////////////////////////////////////////////////
-
-				if (cy > yPos + height / 2) {
-					xPoints[0] = xPos;
-					xPoints[1] = xPos;
-					xPoints[2] = xPos + width;
-
-					yPoints[0] = yPos + height;
-					yPoints[1] = yPos;
-					yPoints[2] = yPos;
-
-					xPoints[3] = xPoints[2] - (cx - xPoints[2]) * 100;
-					yPoints[3] = yPoints[2] - (cy - yPoints[2]) * 100;
-
-					xPoints[4] = xPoints[0] - (cx - xPoints[0]) * 100;
-					yPoints[4] = yPoints[0] - (cy - yPoints[0]) * 100;
-				}
-
-				// //////////////////////////////////////////////////////////////////
-				// Below
-				// //////////////////////////////////////////////////////////////////
-				else if (cy < yPos + height / 2) {
-					xPoints[0] = xPos;
-					xPoints[1] = xPos;
-					xPoints[2] = xPos + width;
-
-					yPoints[0] = yPos;
-					yPoints[1] = yPos + height;
-					yPoints[2] = yPos + height;
-
-					xPoints[3] = xPoints[2] - (cx - xPoints[2]) * 100;
-					yPoints[3] = yPoints[2] - (cy - yPoints[2]) * 100;
-
-					xPoints[4] = xPoints[0] - (cx - xPoints[0]) * 100;
-					yPoints[4] = yPoints[0] - (cy - yPoints[0]) * 100;
-				}
-
-				// ///////////////////////////////////////////////////////////////////
-				// Left
-				// ///////////////////////////////////////////////////////////////////
-				else {
-					// xPoints = new int[6];
-					// xPoints[0] = xPos + width;
-					// xPoints[1] = xPos;
-					// xPoints[2] = xPos;
-					// xPoints[3] = xPos + width;
-					//
-					// yPoints = new int[6];
-					// yPoints[0] = yPos;
-					// yPoints[1] = yPos;
-					// yPoints[2] = yPos + height;
-					// yPoints[3] = yPos + height;
-					//
-					// xPoints[4] = xPoints[0] - size;
-					// yPoints[4] = yPoints[0] - Math.round((yPoints[0] -
-					// cy)/(xPoints[0] - cx));
-					//
-					// xPoints[5] = xPoints[2] - size;
-					// yPoints[5] = yPoints[2] + Math.round((yPoints[2] -
-					// cy)/(xPoints[2] - cx));
-				}
-			}
-
-			// ///////////////////////////////////////////////////////////////////////
-			// Right Side
-			// ///////////////////////////////////////////////////////////////////////
-			else if (cx < xPos + width / 2) {
-
-				// /////////////////////////////////////////////////////////////////////
-				// Above
-				// /////////////////////////////////////////////////////////////////////
-				if (cy > yPos + height / 2) {
-					xPoints[0] = xPos;
-					xPoints[1] = xPos + width;
-					xPoints[2] = xPos + width;
-
-					yPoints[0] = yPos;
-					yPoints[1] = yPos;
-					yPoints[2] = yPos + height;
-
-					xPoints[3] = xPoints[2] + (xPoints[2] - cx) * 100;
-					yPoints[3] = yPoints[2] - (cy - yPoints[2]) * 100;
-
-					xPoints[4] = xPoints[0] + (xPoints[0] - cx) * 100;
-					yPoints[4] = yPoints[0] - (cy - yPoints[0]) * 100;
-				}
-
-				// //////////////////////////////////////////////////////////////////////
-				// Below
-				// //////////////////////////////////////////////////////////////////////
-				else if (cy < yPos + height / 2) {
-					xPoints[0] = xPos + width;
-					xPoints[1] = xPos + width;
-					xPoints[2] = xPos;
-
-					yPoints[0] = yPos;
-					yPoints[1] = yPos + height;
-					yPoints[2] = yPos + height;
-
-					xPoints[3] = xPoints[2] + (xPoints[2] - cx) * 100;
-					yPoints[3] = yPoints[2] - (cy - yPoints[2]) * 100;
-
-					xPoints[4] = xPoints[0] + (xPoints[0] - cx) * 100;
-					yPoints[4] = yPoints[0] - (cy - yPoints[0]) * 100;
-				}
-
-				// /////////////////////////////////////////////////////////////////////////
-				// Right
-				// /////////////////////////////////////////////////////////////////////////
-				else {
-					// xPoints = new int[6];
-					// xPoints[0] = xPos;
-					// xPoints[1] = xPos + width;
-					// xPoints[2] = xPos + width;
-					// xPoints[3] = xPos;
-
-					// yPoints = new int[6];
-					// yPoints[0] = yPos;
-					// yPoints[1] = yPos;
-					// yPoints[2] = yPos + height;
-					// yPoints[3] = yPos + height;
-
-					// xPoints[4] = xPoints[0] + width + (xPoints[0] - cx) *
-					// 100;
-					// xPoints[5] = xPoints[2] + width + yPoints[0] - (cy -
-					// yPoints[0]) * 100;
-
-					// yPoints[4] = yPoints[0] + Math.round((yPoints[0] - cy) /
-					// (xPoints[0] - cx));
-					// yPoints[5] = yPoints[2] + Math.round((yPoints[2] - cy) /
-					// (xPoints[2] - cx));
-				}
-			}
-
-			// ////////////////////////////////////////////////////////////////////////
-			// Centered
-			// ////////////////////////////////////////////////////////////////////////
-			else {
-				// xPoints = new int[6];
-				// yPoints = new int[6];
-
-				// xPoints[0] = xPos;
-				// xPoints[1] = xPos;
-				// xPoints[2] = xPos + width;
-				// xPoints[3] = xPos + width;
-
-				// yPoints[0] = yPos + height;
-				// yPoints[1] = yPos;
-				// yPoints[2] = yPos;
-				// yPoints[3] = yPos + height;
-
-				// xPoints[4] = xPoints[0] + width;
-				// xPoints[4] = xPoints[3] + width;
-
-				// yPoints[5] = yPoints[0] + Math.round((yPoints[0] - cy) /
-				// (xPoints[0] - cx));
-				// yPoints[5] = yPoints[3] + Math.round((yPoints[3] - cy) /
-				// (xPoints[3] - cx));
-			}
-
-			shadows.add(new Area(new Polygon(xPoints, yPoints, xPoints.length)));
-		}
-		return shadows;
-	}
-
-	public boolean changeIntensity(double intensity) {
-		if (intensity >= 0)
-			this.intensity = intensity;
-		return false;
-	}
-
-	public void changeShapes(List<Shape> shapes) {
-		this.shapes = shapes;
-	}
-
-//	private int[] listToArray(List<Integer> list) {
-//		int[] array = new int[list.size()];
-//		for (int i = 0; i < list.size(); i++) {
-//			array[i] = list.get(i);
-//		}
-//		return array;
-//	}
-
-	public boolean clearShapes() {
-		shapes.clear();
-		return true;
-	}
+  }
 }

@@ -1,6 +1,5 @@
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.util.ArrayList;
 
 abstract class Character
 {
@@ -15,6 +14,15 @@ abstract class Character
   protected Point position = new Point();
   protected static CollisionMap cMap = new CollisionMap();
   protected Point trapPosition = null;
+  // 1 = north, 2 = east, 3 = south, 4 = west
+  // 5 = northeast, 6 = southeast, 7 = southwest, 8 = northwest
+  protected int lastMovedDirection = 1;
+  protected int direction = 1;
+
+  public int getDirection()
+  {
+    return lastMovedDirection;
+  }
 
   /**
    * A getter method for the point ( in pixels ) of the player.

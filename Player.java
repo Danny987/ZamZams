@@ -17,9 +17,7 @@ public class Player extends Character
   private float sight = 0;
   private int fireTrapCount = 0;
   private float currentStamina = 0;
-  // 1 = north, 2 = east, 3 = south, 4 = west
-  // 5 = northeast, 6 = southeast, 7 = southwest, 8 = northwest
-  private int direction = 0;
+
   private boolean regenDelay = false;
 
   /**
@@ -43,13 +41,8 @@ public class Player extends Character
     this.hear = hear;
     this.sight = sight;
     this.speed = speed;
-     this.hitbox = new Rectangle(position.x+5, position.y+5, 40, 40);
+    this.hitbox = new Rectangle(position.x + 5, position.y + 5, 40, 40);
     this.staminaRegen = stamRegen;
-  }
-
-  public int direction()
-  {
-    return this.direction;
   }
 
   public void useFireTrap()
@@ -88,6 +81,15 @@ public class Player extends Character
   public float getSight()
   {
     return this.sight;
+  }
+
+  /**
+   * a position function for testing purposes Only used to test the collision
+   */
+  private void setPositionForTesting(int x, int y)
+  {
+    this.position = new Point(x, y);
+    this.getHitbox().setLocation(x + 5, y + 5);
   }
 
   public int move(int leftRight, int upDown, boolean sprint)
@@ -158,8 +160,9 @@ public class Player extends Character
 
       // free movement
       this.position.x -= Math.round(TILE * moveSpeed / FRAMERATE);
-      this.hitbox = new Rectangle(position.x+5, position.y+5, 40, 40);
+      this.hitbox = new Rectangle(position.x + 5, position.y + 5, 40, 40);
       moveFlag = 1;
+      direction = 4;
 
     }
 
@@ -168,8 +171,9 @@ public class Player extends Character
 
       // free movement
       this.position.x += Math.round(TILE * moveSpeed / FRAMERATE);
-       this.hitbox = new Rectangle(position.x+5, position.y+5, 40, 40);
+      this.hitbox = new Rectangle(position.x + 5, position.y + 5, 40, 40);
       moveFlag = 1;
+      direction = 2;
 
     }
     else if (leftRight == 0 && upDown == 1)
@@ -177,9 +181,9 @@ public class Player extends Character
 
       // free movement
       this.position.y -= Math.round(TILE * moveSpeed / FRAMERATE);
-       this.hitbox = new Rectangle(position.x+5, position.y+5, 40, 40);
+      this.hitbox = new Rectangle(position.x + 5, position.y + 5, 40, 40);
       moveFlag = 1;
-
+      direction = 1;
     }
 
     else if (leftRight == 0 && upDown == 2)
@@ -187,9 +191,9 @@ public class Player extends Character
 
       // free movement
       this.position.y += Math.round(TILE * moveSpeed / FRAMERATE);
-       this.hitbox = new Rectangle(position.x+5, position.y+5, 40, 40);
+      this.hitbox = new Rectangle(position.x + 5, position.y + 5, 40, 40);
       moveFlag = 1;
-
+      direction = 3;
     }
 
     else if (leftRight == 1 && upDown == 1)
@@ -199,9 +203,9 @@ public class Player extends Character
           / Math.sqrt(2));
       this.position.y -= Math.round((TILE * moveSpeed / FRAMERATE)
           / Math.sqrt(2));
-       this.hitbox = new Rectangle(position.x+5, position.y+5, 40, 40);
+      this.hitbox = new Rectangle(position.x + 5, position.y + 5, 40, 40);
       moveFlag = 1;
-
+      direction = 8;
     }
     else if (leftRight == 1 && upDown == 2)
     {
@@ -211,9 +215,9 @@ public class Player extends Character
           / Math.sqrt(2));
       this.position.y += Math.round((TILE * moveSpeed / FRAMERATE)
           / Math.sqrt(2));
-       this.hitbox = new Rectangle(position.x+5, position.y+5, 40, 40);
+      this.hitbox = new Rectangle(position.x + 5, position.y + 5, 40, 40);
       moveFlag = 1;
-
+      direction = 7;
     }
 
     else if (leftRight == 2 && upDown == 1)
@@ -224,9 +228,9 @@ public class Player extends Character
           / Math.sqrt(2));
       this.position.y -= Math.round((TILE * moveSpeed / FRAMERATE)
           / Math.sqrt(2));
-       this.hitbox = new Rectangle(position.x+5, position.y+5, 40, 40);
+      this.hitbox = new Rectangle(position.x + 5, position.y + 5, 40, 40);
       moveFlag = 1;
-
+      direction = 5;
     }
 
     else if (leftRight == 2 && upDown == 2)
@@ -237,9 +241,9 @@ public class Player extends Character
           / Math.sqrt(2));
       this.position.y += Math.round((TILE * moveSpeed / FRAMERATE)
           / Math.sqrt(2));
-       this.hitbox = new Rectangle(position.x+5, position.y+5, 40, 40);
+      this.hitbox = new Rectangle(position.x + 5, position.y + 5, 40, 40);
       moveFlag = 1;
-
+      direction = 6;
     }
     return moveFlag;
   }
@@ -253,7 +257,7 @@ public class Player extends Character
     Level level = new Level("test_level.xml");
     Player p = new Player(1.0f, 1.0f, 1.0f, 1.0f, 1.0f);
 
-    // level.houseList.get(0).drawHouse(true, true);
+    level.houseList.get(0).drawHouse(true, true);
     Character.getCollisionMap().BuildcollisionMap(level.houseList.get(0));
     p.setPosition(test);
     assert p.move(0, 0, false) == (1);
@@ -280,28 +284,28 @@ public class Player extends Character
      * zombie
      */
     test.setLocation(6, 2);
-    p.setPosition(test);
+    p.setPositionForTesting(290, 100);
     assert p.collision(Character.getCollisionMap(), 1, 0) == (1);
     test.setLocation(4, 2);
-    p.setPosition(test);
+    p.setPositionForTesting(210, 100);
     assert p.collision(Character.getCollisionMap(), 2, 0) == (1);
     test.setLocation(6, 3);
-    p.setPosition(test);
+    p.setPositionForTesting(290, 140);
     assert p.collision(Character.getCollisionMap(), 1, 1) == (1);
     test.setLocation(6, 1);
-    p.setPosition(test);
+    p.setPositionForTesting(290, 110);
     assert p.collision(Character.getCollisionMap(), 1, 2) == (1);
     test.setLocation(4, 3);
-    p.setPosition(test);
+    p.setPositionForTesting(210, 140);
     assert p.collision(Character.getCollisionMap(), 2, 1) == (1);
     test.setLocation(4, 1);
-    p.setPosition(test);
+    p.setPositionForTesting(210, 60);
     assert p.collision(Character.getCollisionMap(), 2, 2) == (1);
     test.setLocation(5, 3);
-    p.setPosition(test);
+    p.setPositionForTesting(250, 140);
     assert p.collision(Character.getCollisionMap(), 0, 1) == (1);
     test.setLocation(5, 1);
-    p.setPosition(test);
+    p.setPositionForTesting(250, 60);
     assert p.collision(Character.getCollisionMap(), 0, 2) == (1);
 
     /**
@@ -310,7 +314,7 @@ public class Player extends Character
      */
     Player p2 = new Player(1.0f, 1.0f, 1.0f, 1.0f, 1.0f);
     test.setLocation(1, 1);
-    p2.setPosition(test);
+    p2.setPositionForTesting(45, 45);
     assert p2.collision(Character.getCollisionMap(), 0, 0) == (0);
     assert p2.objectCollision == false;
     assert p2.collision(Character.getCollisionMap(), 1, 0) == (0);
@@ -339,7 +343,7 @@ public class Player extends Character
      * testing firetrap collision collision returns 0 if it didn't hit a zombie
      * */
     test.setLocation(32, 4);
-    p2.setPosition(test);
+    p2.setPositionForTesting(1600, 205);
     assert p2.collision(Character.getCollisionMap(), 0, 2) == (0);
     assert p2.trapCollision == true;
 

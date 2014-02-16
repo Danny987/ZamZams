@@ -80,7 +80,7 @@ public class ZombieFrame extends JFrame {
                 // This double-switching of setVisible is to fix a bug with 
                 // full-screen-exclusive mode on OS X. Versions 10.8 and later
                 // don't send keyboard events properly without it.
-                setVisible(false);
+                //setVisible(false);
             } catch (HeadlessException ex) {
                 System.err.println("Error: primary display not set or found. "
                     + "Your experience of life may be suboptimal.");
