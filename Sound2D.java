@@ -9,6 +9,12 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Random;
 
+import javafx.application.Application;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaPlayerBuilder;
+import javafx.stage.Stage;
+
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -16,24 +22,22 @@ import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.UnsupportedAudioFileException;
-import javax.swing.Timer;
-
-import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.stage.Stage;
-import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
-import javafx.scene.media.MediaPlayerBuilder;
 
 public class Sound2D extends Application implements Runnable
 {
   private boolean sfx = true;
   private boolean music = true;
+
   private static short[] zombieSample;
-  private AudioFormat zombieFormat;
-  private boolean initJavaFX;
+  private static AudioFormat zombieFormat;
+
+  private static short[] fireSample;
+  private static AudioFormat fireFormat;
+
+  private AudioInputStream playerStream;
+  private AudioFormat playerFormat;
+  private File[] stepArray;
+  private File[] runArray;
 
   private MediaPlayerBuilder builder;
   private MediaPlayer player;
@@ -70,60 +74,28 @@ public class Sound2D extends Application implements Runnable
       System.out.println("Zombie Sound File does not exist; turning off sfx");
       sfx = false;
     }
-  }
-
-  void playDistSound(Point source, Point player, byte faceDegree,
-      boolean isZombie)
-  {
-    Thread soundMachine = new Thread()
+    try
+    // Trying to load fire sfx
     {
-      public void run()
+      File blastFile = new File("FireBlast.wav");
+      AudioInputStream stream = AudioSystem.getAudioInputStream(blastFile);
+      fireFormat = stream.getFormat();
+      byte[] array = getSamples(stream);
+      fireSample = new short[array.length / 2];
+      for (int i = 0; i < fireSample.length; i++)
       {
-        if (sfx)
-        { /* MAKE THIS THING SOMETIME SOON */
-          Point leftEar = new Point();
-          int sinVal = 0;
-          System.out.println("Sin =" + sinVal);
-          int offset = 2;
-          if (sinVal < 0)
-          {
-            offset--;
-            sinVal = sinVal * -1;
-          }
-          short soundSample[];
-          // if(isZombie)
-          // {
-
-          // }
-          // else
-          // {
-
-          // }
-          short[] returnSample = new short[zombieSample.length];
-          for (int i = 0; i < zombieSample.length; i++)
-          {
-            if (offset == 2)
-            {
-              returnSample[i] = (short) (zombieSample[i] * sinVal);
-              offset = 0;
-            } else
-            {
-              returnSample[i] = zombieSample[i];
-            }
-            offset++;
-          }
-          byte[] byteBuffer = new byte[returnSample.length * 2];
-          for (int i = 0; i < returnSample.length; i++)
-          {
-            byteBuffer[i * 2] = (byte) (returnSample[i] & 0xff);
-            byteBuffer[i * 2 + 1] = (byte) ((returnSample[i] >> 8) & 0xff);
-          }
-          InputStream streamMoan = new ByteArrayInputStream(byteBuffer);
-          play(streamMoan, zombieFormat);
-        }
+        fireSample[i] = getSample(array, i * 2);
       }
-    };
-    soundMachine.start();
+    } catch (UnsupportedAudioFileException ex)
+    {
+      ex.printStackTrace();
+    } catch (IOException ex)
+    {
+      System.out.println("Fire Sound File does not exist; turning off sfx");
+      sfx = false;
+    }
+    File footFile = new File("footstep");
+    stepArray = footFile.listFiles();
   }
 
   public void play(InputStream source, AudioFormat format)
@@ -214,17 +186,50 @@ public class Sound2D extends Application implements Runnable
     return samples;
   }
 
+  public void playDistSound(Point source, Point player, int playerFace,
+      boolean isZombie)
+  {
+
+    Thread sound = new Thread(this.new DistSound(source, player, playerFace,
+        isZombie));
+    sound.start();
+  }
+
+  public void playRunSound(boolean isRunning)
+  {
+    File[] array = isRunning ? runArray : stepArray;
+    try
+    {
+      File playFile = array[rand.nextInt(array.length)];
+      playerStream = AudioSystem.getAudioInputStream(playFile);
+      playerFormat = playerStream.getFormat();
+    } catch (UnsupportedAudioFileException ex)
+    {
+      ex.printStackTrace();
+    } catch (IOException ex)
+    {
+      System.out.println("Step File does not exist");
+      return;
+    }
+    Thread dummy = new Thread(new Runnable()
+    {
+      @Override
+      public void run()
+      {
+        play(playerStream, playerFormat);
+      }
+    });
+    dummy.start();
+  }
+
   public static void main(String[] args)
   {
     Sound2D man = new Sound2D();
     Thread t = new Thread(man);
     t.start();
     System.out.println("launch");
-    for (byte i = 0; i > 2; i++)
-    {
-      System.out.println("test");
-      man.playDistSound(new Point(1, 1), new Point(0, 0), i, true);
-    }
+    man.playDistSound(new Point(1, 1), new Point(0, 0), 0, true);
+    man.playRunSound(false);
   }
 
   @Override
@@ -261,18 +266,17 @@ public class Sound2D extends Application implements Runnable
         player.play();
       }
     }).// Adds the looping scheme to the builder for in game music
-    onEndOfMedia(new Runnable()
-    {
+        onEndOfMedia(new Runnable()
+        {
 
-      @Override
-      public void run()
-      {
-        int val = rand.nextInt(musicList.size());
-        System.out.println("Changed to song" + val);
-        player = builder.media(musicList.get(val))
-            .build();
-      }
-    });
+          @Override
+          public void run()
+          {
+            int val = rand.nextInt(musicList.size());
+            System.out.println("Changed to song" + val);
+            player = builder.media(musicList.get(val)).build();
+          }
+        });
     player = builder.media(musOne).build();
     // For cycling through the different available mp3 files
     musicList.add(musOne);
@@ -280,4 +284,109 @@ public class Sound2D extends Application implements Runnable
     musicList.add(musThree);
     System.out.println("End of line");
   }
+
+  class DistSound implements Runnable
+  {
+    private Point source;
+    private Point player;
+    private byte faceDegree;
+    private AudioFormat format;
+    private short[] sample;
+
+    DistSound(Point source, Point player, int faceDegree, boolean isZombie)
+    {
+      this.source = source;
+      this.player = player;
+      this.faceDegree = (byte) faceDegree;
+      if (isZombie)
+      {
+        format = zombieFormat;
+        sample = zombieSample;
+      } else
+      {
+        format = fireFormat;
+        sample = fireSample;
+      }
+    }
+
+    @Override
+    public void run()
+    {
+      System.out.println("Gragh this is a moan");
+      if (sfx)
+      { 
+        //Player Direction
+        Point leftEar = new Point();
+        Point rightEar = new Point();
+        switch(faceDegree)
+        {
+        case 1://= north
+          leftEar.move(player.x-1, player.y);  
+          rightEar.move(player.x+1, player.y);
+          break;
+        case 2://= east
+          leftEar.move(player.x, player.y-1);
+          rightEar.move(player.x, player.y+1);
+          break;
+        case 3://= south
+          leftEar.move(player.x+1, player.y);
+          rightEar.move(player.x-1, player.y);
+          break;
+        case 4://= west
+          leftEar.move(player.x, player.y+1);
+          rightEar.move(player.x, player.y-1);
+          break;
+        case 5://= northeast
+          leftEar.move(player.x-1, player.y-1);
+          rightEar.move(player.x+1, player.y+1);
+          break;
+        case 6://= southeast
+          leftEar.move(player.x+1, player.y-1);
+          rightEar.move(player.x-1, player.y+1);
+          break;
+        case 7://= southwest
+          leftEar.move(player.x+1, player.y-1);
+          rightEar.move(player.x-1, player.y+1);
+          break;
+        case 8://= northwest
+          leftEar.move(player.x+1, player.y+1);
+          rightEar.move(player.x-1, player.y-1);
+          break;
+        }
+        double distLeft = source.distance(leftEar);
+        double distRight = source.distance(rightEar);
+        double distTrue = source.distance(player);
+        double changeWhole = 1/distTrue;
+        double change3D = distRight/distLeft;
+        int offset = 2; //offset 2 is right, offset 1 is left;
+        if (distRight > distLeft)
+        {
+          change3D = 1/change3D;
+          offset--;
+        }
+        short[] returnSample = new short[sample.length];
+        for (int i = 0; i < sample.length; i++)
+        {
+          if (offset == 2)
+          {
+            returnSample[i] = (short) (sample[i] * change3D*changeWhole);
+            offset = 0;
+          } else
+          {
+            returnSample[i] = (short) (sample[i]*changeWhole);
+          }
+          offset++;
+        }
+        byte[] byteBuffer = new byte[returnSample.length * 2];
+        for (int i = 0; i < returnSample.length; i++)
+        {
+          byteBuffer[i * 2] = (byte) (returnSample[i] & 0xff);
+          byteBuffer[i * 2 + 1] = (byte) ((returnSample[i] >> 8) & 0xff);
+        }
+        InputStream inputStream = new ByteArrayInputStream(byteBuffer);
+        play(inputStream, format);
+      }
+    }
+  }
+
 }
