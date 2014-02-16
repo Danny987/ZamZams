@@ -46,8 +46,8 @@ public class Sound2D extends Application implements Runnable
 
   private MediaPlayerBuilder menuBuilder;
   private MediaPlayerBuilder gameBuilder;
-  static BooleanProperty menuSwitch;
-  private MediaPlayer player;
+  private static BooleanProperty menuSwitch;
+  private static MediaPlayer player;
   ArrayList<Media> musicList;
   private Random rand;
 
@@ -62,7 +62,7 @@ public class Sound2D extends Application implements Runnable
     try
     // Trying to load zombie sfx
     {
-      File moanFile = new File("sounds/ZombieMoan.wav");
+      File moanFile = new File("src/sounds/ZombieMoan.wav");
       AudioInputStream stream = AudioSystem.getAudioInputStream(moanFile);
       zombieFormat = stream.getFormat();
       byte[] array = getSamples(stream);
@@ -82,7 +82,7 @@ public class Sound2D extends Application implements Runnable
     try
     // Trying to load fire sfx
     {
-      File blastFile = new File("sounds/FireBlast.wav");
+      File blastFile = new File("src/sounds/FireBlast.wav");
       AudioInputStream stream = AudioSystem.getAudioInputStream(blastFile);
       fireFormat = stream.getFormat();
       byte[] array = getSamples(stream);
@@ -99,7 +99,7 @@ public class Sound2D extends Application implements Runnable
       System.out.println("Fire Sound File does not exist; turning off sfx");
       sfx = false;
     }
-    File footFile = new File("sounds/footstep");
+    File footFile = new File("src/sounds/footstep");
     stepArray = footFile.listFiles();
   }
 
@@ -202,29 +202,32 @@ public class Sound2D extends Application implements Runnable
 
   public void playRunSound(boolean isRunning)
   {
-    File[] array = isRunning ? runArray : stepArray;
-    try
+    if (sfx)
     {
-      File playFile = array[rand.nextInt(array.length)];
-      playerStream = AudioSystem.getAudioInputStream(playFile);
-      playerFormat = playerStream.getFormat();
-    } catch (UnsupportedAudioFileException ex)
-    {
-      ex.printStackTrace();
-    } catch (IOException ex)
-    {
-      System.out.println("Step File does not exist");
-      return;
-    }
-    Thread dummy = new Thread(new Runnable()
-    {
-      @Override
-      public void run()
+      File[] array = isRunning ? runArray : stepArray;
+      try
       {
-        play(playerStream, playerFormat);
+        File playFile = array[rand.nextInt(array.length)];
+        playerStream = AudioSystem.getAudioInputStream(playFile);
+        playerFormat = playerStream.getFormat();
+      } catch (UnsupportedAudioFileException ex)
+      {
+        ex.printStackTrace();
+      } catch (IOException ex)
+      {
+        System.out.println("Step File does not exist");
+        return;
       }
-    });
-    dummy.start();
+      Thread dummy = new Thread(new Runnable()
+      {
+        @Override
+        public void run()
+        {
+          play(playerStream, playerFormat);
+        }
+      });
+      dummy.start();
+    }
   }
 
   public static void main(String[] args) throws InterruptedException
@@ -234,7 +237,6 @@ public class Sound2D extends Application implements Runnable
     t.start();
     System.out.println("launch");
     man.playDistSound(new Point(1, 1), new Point(0, 0), 0, true);
-    t.join();
     for (int i = 0; i < 360; i++)
     {
       man.playRunSound(false);
@@ -256,10 +258,11 @@ public class Sound2D extends Application implements Runnable
     String file = "file:///" + musicFile.getAbsolutePath().replace('\\', '/');
     for (String i : musicFile.list())
     {
-      if(!i.endsWith(".mp3")) continue;
+      if (!i.endsWith(".mp3"))
+        continue;
       musicList.add(new Media(file + "/" + i));
     }
-    final Media openScreen = new Media(file+"/menuMusic/EveningOfChaos.mp3");
+    final Media openScreen = new Media(file + "/menuMusic/EveningOfChaos.mp3");
     menuSwitch = new SimpleBooleanProperty(true);
     menuSwitch.addListener(new ChangeListener<Boolean>()
     {
