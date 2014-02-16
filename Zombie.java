@@ -3,15 +3,15 @@ import java.awt.Rectangle;
 import java.util.ArrayList;
 
 /**
- * @author Mario LoPrinzi ``
+ * @author Mario LoPrinzi
  */
 public class Zombie extends Character
 {
   private int walkType = 0; // 0 is random walk and 1 is line walk
   private float probabiltyA, probablityB, smell;
   // 1 = north, 2 = east, 3 = south, 4 = west
-  // 5 = northeast, 6 = southeast, 7 = southwest, 8 = northwest`
-  private int chosenDirection = 1;
+  // 5 = northeast, 6 = southeast, 7 = southwest, 8 = northwest
+  private int chosenDirection = 0;
   // for line walk zombies
   private int previousDirection = 0;
 
@@ -37,36 +37,32 @@ public class Zombie extends Character
     this.smell = adjustedSmell;
   }
 
-  private void move(Zombie curZombie)
-  {
-
-    curZombie.mover();
-
-  }
-
   public void chooseDirection()
   {
     if (this.walkType == 0)
     {
-      if (probabiltyA <= (Math.random() ))
+      if (probabiltyA >= (Math.random() * 100))
       {
         // chooses a random direction to move in
-        chosenDirection = (int) (Math.random() * 8);
+        this.chosenDirection = (int) (Math.random() * 9);
       }
 
       else
       {
         // no movement
         chosenDirection = 0;
+        System.out.println(chosenDirection);
+
       }
     }
     else
     {
       // line walk type movement
-      if (probabiltyA <= (Math.random() ))
+      if (probabiltyA >= (Math.random() * 100))
       {
         // chooses a random direction to move in
-        chosenDirection = (int) (Math.random() * 7) + 1;
+        chosenDirection = (int) (Math.random() * 8 ) + 1;
+        System.out.println(chosenDirection);
       }
 
       else
@@ -81,12 +77,11 @@ public class Zombie extends Character
   {
     for (Zombie curZombie : zombieList)
     {
-      System.out.println("*******" + curZombie.getHitbox().toString());
-      curZombie.move(curZombie);
+      curZombie.move();
     }
   }
 
-  private void mover()
+  private void move()
   {
     int leftRight = 0, upDown = 0;
 
@@ -161,102 +156,200 @@ public class Zombie extends Character
        * player has triggered a trap
        */
     }
-    else if (this.chosenDirection == 0)
+
+    if (this.objectCollision == false)
     {
-      previousDirection = direction;
-    }
+      if (this.chosenDirection == 0)
+      {
+        previousDirection = direction;
+      }
 
-    else if (this.chosenDirection == 4)
-    {
+      else if (this.chosenDirection == 4)
+      {
 
-      // free movement
-      this.position.x -= (TILE * speed / FRAMERATE);
-      this.hitbox = new Rectangle(position.x + 5, position.y + 5, 40, 40);
+        // free movement
+        this.position.x -= (TILE * speed / FRAMERATE);
+        this.hitbox = new Rectangle(position.x + 5, position.y + 5, 40, 40);
 
-      lastMovedDirection = direction;
-      previousDirection = direction;
-      this.direction = 4;
+        lastMovedDirection = direction;
+        previousDirection = direction;
+        this.direction = 4;
 
-    }
+      }
 
-    else if (this.chosenDirection == 2)
-    {
+      else if (this.chosenDirection == 2)
+      {
 
-      // free movement
-      this.position.x += (TILE * speed / FRAMERATE);
-      this.hitbox = new Rectangle(position.x + 5, position.y + 5, 40, 40);
-      previousDirection = direction;
-      lastMovedDirection = direction;
-      this.direction = 2;
+        // free movement
+        this.position.x += (TILE * speed / FRAMERATE);
+        this.hitbox = new Rectangle(position.x + 5, position.y + 5, 40, 40);
+        previousDirection = direction;
+        lastMovedDirection = direction;
+        this.direction = 2;
 
-    }
-    else if (this.chosenDirection == 1)
-    {
+      }
+      else if (this.chosenDirection == 1)
+      {
 
-      // free movement
-      this.position.y -= (TILE * speed / FRAMERATE);
-      this.hitbox = new Rectangle(position.x + 5, position.y + 5, 40, 40);
-      lastMovedDirection = direction;
-      previousDirection = direction;
-      this.direction = 1;
-    }
+        // free movement
+        this.position.y -= (TILE * speed / FRAMERATE);
+        this.hitbox = new Rectangle(position.x + 5, position.y + 5, 40, 40);
+        lastMovedDirection = direction;
+        previousDirection = direction;
+        this.direction = 1;
+      }
 
-    else if (this.chosenDirection == 3)
-    {
+      else if (this.chosenDirection == 3)
+      {
 
-      // free movement
-      this.position.y += (TILE * speed / FRAMERATE);
-      this.hitbox = new Rectangle(position.x + 5, position.y + 5, 40, 40);
-      lastMovedDirection = direction;
-      previousDirection = direction;
-      this.direction = 3;
-    }
+        // free movement
+        this.position.y += (TILE * speed / FRAMERATE);
+        this.hitbox = new Rectangle(position.x + 5, position.y + 5, 40, 40);
+        lastMovedDirection = direction;
+        previousDirection = direction;
+        this.direction = 3;
+      }
 
-    else if (this.chosenDirection == 8)
-    {
-      // free movement
-      this.position.x -= ((TILE * speed / FRAMERATE) / Math.sqrt(2));
-      this.position.y -= ((TILE * speed / FRAMERATE) / Math.sqrt(2));
-      this.hitbox = new Rectangle(position.x + 5, position.y + 5, 40, 40);
-      lastMovedDirection = direction;
-      previousDirection = direction;
-      this.direction = 8;
-    }
-    else if (this.chosenDirection == 7)
-    {
+      else if (this.chosenDirection == 8)
+      {
+        // free movement
+        this.position.x -= ((TILE * speed / FRAMERATE) / Math.sqrt(2));
+        this.position.y -= ((TILE * speed / FRAMERATE) / Math.sqrt(2));
+        this.hitbox = new Rectangle(position.x + 5, position.y + 5, 40, 40);
+        lastMovedDirection = direction;
+        previousDirection = direction;
+        this.direction = 8;
+      }
+      else if (this.chosenDirection == 7)
+      {
 
-      // free movement
-      this.position.x -= ((TILE * speed / FRAMERATE) / Math.sqrt(2));
-      this.position.y += ((TILE * speed / FRAMERATE) / Math.sqrt(2));
-      this.hitbox = new Rectangle(position.x + 5, position.y + 5, 40, 40);
-      lastMovedDirection = direction;
-      previousDirection = direction;
-      this.direction = 7;
-    }
+        // free movement
+        this.position.x -= ((TILE * speed / FRAMERATE) / Math.sqrt(2));
+        this.position.y += ((TILE * speed / FRAMERATE) / Math.sqrt(2));
+        this.hitbox = new Rectangle(position.x + 5, position.y + 5, 40, 40);
+        lastMovedDirection = direction;
+        previousDirection = direction;
+        this.direction = 7;
+      }
 
-    else if (this.chosenDirection == 5)
-    {
+      else if (this.chosenDirection == 5)
+      {
 
-      // free movement
-      this.position.x += ((TILE * speed / FRAMERATE) / Math.sqrt(2));
-      this.position.y -= ((TILE * speed / FRAMERATE) / Math.sqrt(2));
-      this.hitbox = new Rectangle(position.x + 5, position.y + 5, 40, 40);
-      lastMovedDirection = direction;
-      previousDirection = direction;
-      this.direction = 5;
-    }
+        // free movement
+        this.position.x += ((TILE * speed / FRAMERATE) / Math.sqrt(2));
+        this.position.y -= ((TILE * speed / FRAMERATE) / Math.sqrt(2));
+        this.hitbox = new Rectangle(position.x + 5, position.y + 5, 40, 40);
+        lastMovedDirection = direction;
+        previousDirection = direction;
+        this.direction = 5;
+      }
 
-    else if (this.chosenDirection == 6)
-    {
+      else if (this.chosenDirection == 6)
+      {
 
-      // free movement
-      this.position.x += ((TILE * speed / FRAMERATE) / Math.sqrt(2));
-      this.position.y += ((TILE * speed / FRAMERATE) / Math.sqrt(2));
-      this.hitbox = new Rectangle(position.x + 5, position.y + 5, 40, 40);
-      lastMovedDirection = direction;
-      previousDirection = direction;
-      this.direction = 6;
+        // free movement
+        this.position.x += ((TILE * speed / FRAMERATE) / Math.sqrt(2));
+        this.position.y += ((TILE * speed / FRAMERATE) / Math.sqrt(2));
+        this.hitbox = new Rectangle(position.x + 5, position.y + 5, 40, 40);
+        lastMovedDirection = direction;
+        previousDirection = direction;
+        this.direction = 6;
+      }
     }
     return;
+  }
+
+  int collision(CollisionMap map, int leftRight, int upDown)
+  {
+    // return 1 = zombie collision, player dead
+    exitCollision = false;
+    trapCollision = false;
+    objectCollision = false;
+
+    moveBox.setBounds(this.hitbox);
+    if (leftRight == 1 && upDown == 0)
+    {
+      moveBox.setLocation((int) ((moveBox.x - speed * TILE / FRAMERATE)),
+          moveBox.y);
+    }
+
+    else if (leftRight == 2 && upDown == 0)
+    {
+      moveBox.setLocation((int) ((moveBox.x + speed * TILE / FRAMERATE)),
+          moveBox.y);
+    }
+
+    else if (leftRight == 0 && upDown == 1)
+    {
+      moveBox.setLocation(moveBox.x, (int) ((moveBox.y - speed * TILE
+          / FRAMERATE)));
+
+    }
+
+    else if (leftRight == 0 && upDown == 2)
+    {
+      moveBox.setLocation(moveBox.x, (int) ((moveBox.y + speed * TILE
+          / FRAMERATE)));
+    }
+    else if (leftRight == 1 && upDown == 1)
+    {
+      moveBox.setLocation((int) ((moveBox.x - speed * TILE / FRAMERATE)),
+          (int) ((moveBox.y - speed * TILE / FRAMERATE)));
+    }
+    else if (leftRight == 1 && upDown == 2)
+    {
+      moveBox.setLocation((int) ((moveBox.x - speed * TILE / FRAMERATE)),
+          (int) ((moveBox.y + speed * TILE / FRAMERATE)));
+    }
+
+    else if (leftRight == 2 && upDown == 1)
+    {
+      moveBox.setLocation((int) ((moveBox.x + speed * TILE / FRAMERATE)),
+          (int) ((moveBox.y - speed * TILE / FRAMERATE)));
+    }
+
+    else if (leftRight == 2 && upDown == 2)
+    {
+      moveBox.setLocation((int) ((moveBox.x + speed * TILE / FRAMERATE)),
+          (int) ((moveBox.y + speed * TILE / FRAMERATE)));
+    }
+
+    for (Zombie zombie : map.getZombieMap())
+    {
+
+      if (zombie.getHitbox().intersects(moveBox))
+      {
+        if (zombie != this)
+        {
+          return 1;
+        }
+      }
+    }
+
+    for (Tile cObj : map.getCollisionMap())
+    {
+
+      if (cObj.getHitbox().intersects(this.moveBox))
+      {
+
+        if (cObj.getChar() == 'E')
+        {
+          exitCollision = true;
+        }
+        if (cObj.getChar() == 'F')
+        {
+          trapCollision = true;
+          trapPosition = new Point(cObj.getX(), cObj.getY());
+        }
+        if (cObj.getChar() != 'E' && cObj.getChar() != 'F')
+        {
+          objectCollision = true;
+        }
+
+      }
+
+    }
+
+    return 0;
   }
 }
