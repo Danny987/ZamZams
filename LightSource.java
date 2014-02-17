@@ -42,7 +42,7 @@ public class LightSource {
 //    g.fillRect(0, 0, width, height);
     g.fillOval(x - (int)(intensity*100/2), y - (int)(intensity*100/2), (int)(intensity*100), (int)(intensity*100));
     
-    g.setColor(Color.BLACK);
+//    g.setColor(Color.BLACK);
 //    g.fillOval(x - 200, y - 200, 400, 400);
     
 //    g.fill(light);
@@ -52,7 +52,6 @@ public class LightSource {
 
   private Area generateShadows(int x, int y, List<RoundRectangle2D.Float> shapes) {
     Area shadows = new Area();
-    
     float shapeX, shapeY, width, height, arcWidth, arcHeight;
 
     for (RoundRectangle2D.Float s : shapes) {
@@ -63,12 +62,9 @@ public class LightSource {
       arcWidth = s.arcwidth;
       arcHeight = s.archeight;
       
-      if(Math.sqrt((x - shapeX)*(x - shapeX) + (y - shapeY)*(y - shapeY)) < intensity){
-        if(arcHeight == arcWidth){
+//        if(arcHeight == arcWidth){
           shadows.add(new Area(rectangleShadow(x, y, (int)shapeX, (int)shapeY, (int)width, (int)height)));
-        }
-      }
-
+//        }
     }
 
     return shadows;
@@ -77,6 +73,7 @@ public class LightSource {
   private Polygon rectangleShadow(int x, int y, int shapeX, int shapeY, int width, int height) {
     int[] xPoints = {0, 0, 0, 0, 0};
     int[] yPoints = {0, 0, 0, 0, 0};
+    int extend = 500;
     //Left side of screen
     if (x > shapeX + width) {
       
@@ -85,14 +82,14 @@ public class LightSource {
         xPoints = new int[] {shapeX,
                              shapeX,
                              shapeX + width,
-                             shapeX + width - (x - (shapeX + width))*10,
-                             shapeX - (x - shapeX)*10};
+                             shapeX + width - (x - (shapeX + width))*extend,
+                             shapeX - (x - shapeX)*extend};
         
         yPoints = new int[] {shapeY + height, 
                              shapeY, 
                              shapeY,
-                             shapeY - (y - shapeY)*10,
-                             shapeY + height - (y - (shapeY + height))*10};
+                             shapeY - (y - shapeY)*extend,
+                             shapeY + height - (y - (shapeY + height))*extend};
       }
       
       //bottom
@@ -100,14 +97,14 @@ public class LightSource {
           xPoints = new int[] {shapeX,
                                shapeX,
                                shapeX + width,
-                               shapeX + width - (x - (shapeX + width))*10,
-                               shapeX - (x - shapeX)*10};
+                               shapeX + width - (x - (shapeX + width))*extend,
+                               shapeX - (x - shapeX)*extend};
 
           yPoints = new int[] {shapeY, 
                                shapeY + height, 
                                shapeY + height,
-                               shapeY + height - (y - (shapeY + height))*10,
-                               shapeY - (y - shapeY)*10};
+                               shapeY + height - (y - (shapeY + height))*extend,
+                               shapeY - (y - shapeY)*extend};
       }
       
       //left
@@ -116,15 +113,15 @@ public class LightSource {
                             shapeX, 
                             shapeX, 
                             shapeX + width, 
-                            shapeX + width - (x - (shapeX + width))*10, 
-                            shapeX + width - (x - (shapeX + width))*10};
+                            shapeX + width - (x - (shapeX + width))*extend, 
+                            shapeX + width - (x - (shapeX + width))*extend};
       
         yPoints = new int[]{shapeY + height, 
                             shapeY + height, 
                             shapeY, 
                             shapeY,
                             shapeY - (y - shapeY)*10,
-                            shapeY + height - (y - (shapeY + height))*10};
+                            shapeY + height - (y - (shapeY + height))*extend};
       } 
     
     }
@@ -137,14 +134,14 @@ public class LightSource {
           xPoints = new int[] {shapeX,
                                shapeX + width,
                                shapeX + width,
-                               shapeX + width - (x - (shapeX + width))*10,
-                               shapeX - (x - shapeX)*10};
+                               shapeX + width - (x - (shapeX + width))*extend,
+                               shapeX - (x - shapeX)*extend};
           
           yPoints = new int[] {shapeY, 
                                shapeY, 
                                shapeY + height,
-                               shapeY + height - (y - (shapeY + height))*10,
-                               shapeY - (y - shapeY)*10};
+                               shapeY + height - (y - (shapeY + height))*extend,
+                               shapeY - (y - shapeY)*extend};
         }
         
         //bottom
@@ -152,14 +149,14 @@ public class LightSource {
             xPoints = new int[] {shapeX + width,
                                  shapeX + width,
                                  shapeX,
-                                 shapeX - (x - (shapeX))*10,
-                                 shapeX + width - (x - (shapeX + width))*10};
+                                 shapeX - (x - (shapeX))*extend,
+                                 shapeX + width - (x - (shapeX + width))*extend};
 
             yPoints = new int[] {shapeY, 
                                  shapeY + height, 
                                  shapeY + height,
-                                 shapeY + height - (y - (shapeY + height))*10,
-                                 shapeY - (y - shapeY)*10};
+                                 shapeY + height - (y - (shapeY + height))*extend,
+                                 shapeY - (y - shapeY)*extend};
         }
         
         //Right
@@ -168,15 +165,15 @@ public class LightSource {
                               shapeX + width, 
                               shapeX + width, 
                               shapeX, 
-                              shapeX - (x - shapeX)*10, 
-                              shapeX - (x - shapeX)*10};
+                              shapeX - (x - shapeX)*extend, 
+                              shapeX - (x - shapeX)*extend};
         
           yPoints = new int[]{shapeY, 
                               shapeY, 
                               shapeY + height, 
                               shapeY + height,
-                              shapeY + height - (y - (shapeY + height))*10,
-                              shapeY - (y - (shapeY))*10};
+                              shapeY + height - (y - (shapeY + height))*extend,
+                              shapeY - (y - (shapeY))*extend};
         
         }
       }
@@ -188,30 +185,30 @@ public class LightSource {
                             shapeX, 
                             shapeX + width, 
                             shapeX + width, 
-                            shapeX + width - (x - (shapeX + width))*10, 
-                            shapeX - (x - shapeX)*10};
+                            shapeX + width - (x - (shapeX + width))*extend, 
+                            shapeX - (x - shapeX)*extend};
 
         yPoints = new int[]{shapeY + height, 
                             shapeY, 
                             shapeY, 
                             shapeY + height,
-                            shapeY + height - (y - (shapeY + height))*10,
-                            shapeY + height- (y - (shapeY + height))*10};
+                            shapeY + height - (y - (shapeY + height))*extend,
+                            shapeY + height- (y - (shapeY + height))*extend};
       }
       else if(y < shapeY){
         xPoints = new int[]{shapeX, 
                             shapeX, 
                             shapeX + width,   
                             shapeX + width, 
-                            shapeX + width - (x - (shapeX + width))*10, 
-                            shapeX - (x - shapeX)*10};
+                            shapeX + width - (x - (shapeX + width))*extend, 
+                            shapeX - (x - shapeX)*extend};
 
         yPoints = new int[]{shapeY, 
                             shapeY + height, 
                             shapeY + height, 
                             shapeY,
-                            shapeY - (y - shapeY)*10,
-                            shapeY - (y - shapeY)*10};
+                            shapeY - (y - shapeY)*extend,
+                            shapeY - (y - shapeY)*extend};
       }
     }
     
