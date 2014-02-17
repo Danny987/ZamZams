@@ -43,7 +43,7 @@ public class Sound2D extends Application implements Runnable
   private AudioInputStream playerStream;
   private AudioFormat playerFormat;
   private File[] stepArray;
-  private File[] runArray;
+  private File[] burnArray;
 
   private MediaPlayerBuilder menuBuilder;
   private MediaPlayerBuilder gameBuilder;
@@ -132,6 +132,8 @@ public class Sound2D extends Application implements Runnable
     }
     File footFile = new File("src/sounds/footstep");
     stepArray = footFile.listFiles();
+    File burnFile = new File("src/sounds/burning");
+    burnArray = footFile.listFiles();
   }
 
   public void play(InputStream source, AudioFormat format)
@@ -223,19 +225,19 @@ public class Sound2D extends Application implements Runnable
   }
 
   public void playDistSound(Point2D.Double source, Point2D.Double player, int playerFace,
-      boolean isZombie)
+      int soundType)
   {
 
     Thread sound = new Thread(this.new DistSound(source, player, playerFace,
-        isZombie));
+        soundType));
     sound.start();
   }
 
-  public void playRunSound(boolean isRunning)
+  public void playRunSound()
   {
     if (sfx)
     {
-      File[] array = isRunning ? runArray : stepArray;
+      File[] array = stepArray;
       try
       {
         File playFile = array[rand.nextInt(array.length)];
@@ -267,8 +269,8 @@ public class Sound2D extends Application implements Runnable
     Thread t = new Thread(man);
     t.start();
     System.out.println("launch");
-    man.playDistSound(new Point2D.Double(1, 1), new Point2D.Double(0, 0), 0, true);
-    man.playDistSound(new Point2D.Double(0, 0), new Point2D.Double(1, 1), 0, false);
+    man.playDistSound(new Point2D.Double(1, 1), new Point2D.Double(0, 0), 0, 1);
+    man.playDistSound(new Point2D.Double(0, 0), new Point2D.Double(1, 1), 0, 2);
     man.switchMenu();
   }
 
@@ -368,19 +370,34 @@ public class Sound2D extends Application implements Runnable
     private AudioFormat format;
     private short[] sample;
 
-    DistSound(Point2D.Double source2, Point2D.Double player2, int faceDegree, boolean isZombie)
+    DistSound(Point2D.Double source2, Point2D.Double player2, int faceDegree, int soundType)
     {
       this.source = source2;
       this.player = player2;
       this.faceDegree = (byte) faceDegree;
-      if (isZombie)
+      if (soundType == 1)
       {
         format = zombieFormat;
         sample = zombieSample;
-      } else
+      } else if(soundType == 2)
       {
         format = fireFormat;
         sample = fireSample;
+      } else if(soundType == 3)
+      {
+        try
+        {
+          File playFile = burnArray[rand.nextInt(burnArray.length)];
+          playerStream = AudioSystem.getAudioInputStream(playFile);
+          playerFormat = playerStream.getFormat();
+        } catch (UnsupportedAudioFileException ex)
+        {
+          ex.printStackTrace();
+        } catch (IOException ex)
+        {
+          System.out.println("Step File does not exist");
+          return;
+        }
       }
     }
 
