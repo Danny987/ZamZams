@@ -1,4 +1,3 @@
-import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -12,14 +11,10 @@ import java.util.List;
 
 public class LightSource {
   private Color color;
-  private int intensity = 500;
-  private int width, height;
   private BufferedImage black;
 
   public LightSource(Color color, int width, int height) {
     this.color = color;
-    this.width = width;
-    this.height = height;
     black = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
     Graphics g = black.createGraphics();
     g.setColor(Color.BLACK);
@@ -52,19 +47,15 @@ public class LightSource {
 
   private Area generateShadows(int x, int y, List<RoundRectangle2D.Float> shapes) {
     Area shadows = new Area();
-    float shapeX, shapeY, width, height, arcWidth, arcHeight;
+    float shapeX, shapeY, width, height;
 
     for (RoundRectangle2D.Float s : shapes) {
       shapeX = s.x * 50;
       shapeY = s.y * 50;
       width = s.width * 50;
       height = s.height * 50;
-      arcWidth = s.arcwidth;
-      arcHeight = s.archeight;
       
-//        if(arcHeight == arcWidth){
-          shadows.add(new Area(rectangleShadow(x, y, (int)shapeX, (int)shapeY, (int)width, (int)height)));
-//        }
+      shadows.add(new Area(rectangleShadow(x, y + 10, (int)shapeX, (int)shapeY, (int)width, (int)height)));
     }
 
     return shadows;
@@ -120,7 +111,7 @@ public class LightSource {
                             shapeY + height, 
                             shapeY, 
                             shapeY,
-                            shapeY - (y - shapeY)*10,
+                            shapeY - (y - shapeY)*extend,
                             shapeY + height - (y - (shapeY + height))*extend};
       } 
     
@@ -214,9 +205,5 @@ public class LightSource {
     
       
     return new Polygon(xPoints, yPoints, xPoints.length);
-  }
-
-  private void circleShadow(RoundRectangle2D.Float shape) {
-
   }
 }

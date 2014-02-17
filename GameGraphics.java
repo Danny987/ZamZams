@@ -165,7 +165,7 @@ public class GameGraphics extends JPanel {
     }
     
     LightSource player = new LightSource(new Color(255,0,0,0), lights.getWidth(), lights.getHeight());
-    LightSource fire = new LightSource(new Color(0, 255, 0, 0), lights.getWidth(), lights.getHeight());
+    LightSource fire = new LightSource(Color.ORANGE, lights.getWidth(), lights.getHeight());
     lightSources.add(player);
     lightSources.add(fire);
     
@@ -179,14 +179,15 @@ public class GameGraphics extends JPanel {
 
   private boolean loadImages() throws MissingResourceException, IOException {
     sprites = ImageIO.read(new File("bettersprites.png"));
-    return false;
+    return true;
   }
 
   public void update() {
     List<Zombie> zombies = house.zombieList;
-    Rectangle2D box;
-    int x, y, width, height;
+    Point point;
     BufferedImage sprite = null;
+    int x, y, width, height;
+    int direction = 0;
 
     charactersGraphics.clearRect(0, 0, characters.getWidth(), characters.getHeight());
 
@@ -199,14 +200,14 @@ public class GameGraphics extends JPanel {
       height = (int)Math.round(t.getHeight() * 50);
 
       if(t.getChar() == t.H_WALL){
-        sprite = sprites.getSubimage(350, 150, 50, 50);
+        sprite = sprites.getSubimage(50, 0, 50, 50);
         for(int i = 0; i < width/50; i++){
           backgroundGraphics.drawImage(sprite, x, y, null);
           x += 50;
         }
       }
       else if(t.getChar() == t.V_WALL){
-        sprite = sprites.getSubimage(300, 150, 50, 50);
+        sprite = sprites.getSubimage(250, 50, 50, 50);
         for(int i = 0; i < height/50; i++){
           backgroundGraphics.drawImage(sprite, x, y, null);
           y += 50;
@@ -229,12 +230,11 @@ public class GameGraphics extends JPanel {
       }
     }
 
-    int direction = 0;
     charactersGraphics.setColor(Color.RED);
     for (Zombie z : zombies) {
-      box = z.moveBox;
-      x = (int) box.getX();
-      y = (int) box.getY();
+      point = z.getPosition();
+      x = (int) point.getX();
+      y = (int) point.getY();
       direction = z.getDirection();
       
       if(direction == 1) sprite = sprites.getSubimage(300, 0, 200, 50);
@@ -255,7 +255,7 @@ public class GameGraphics extends JPanel {
     
     direction = house.player.getDirection();
     
-    playerFrame = frameCount % 3 == 0 ? ++playerFrame: playerFrame;
+    if(house.player.getMoveFlag() != 0) playerFrame = frameCount % 3 == 0 ? ++playerFrame: playerFrame;
     
     if(direction == 1) sprite = sprites.getSubimage(775, 100, 200, 50);
     else if(direction == 2 || direction == 5 || direction == 6) sprite = sprites.getSubimage(775, 150, 200, 50);
@@ -274,20 +274,13 @@ public class GameGraphics extends JPanel {
     repaint();
   }
 
-  BufferedImage lightsBuffer;
-  Graphics2D lightsBuffGraphs;
   //update LightSource
   public void updateLight(){
     Point playerPosition = house.player.getPosition();
     lightsGraphics.drawImage(black, 0, 0, null);
     lightsGraphics.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC));
-    lightsBuffer = new BufferedImage(lights.getWidth(), lights.getHeight(), BufferedImage.TYPE_INT_ARGB);
-    lightsBuffGraphs = lightsBuffer.createGraphics();
-    
-    if(frameCount % 10 == 0) lightSources.get(1).update(500, 500, shapes, 10, lightsBuffGraphs);
-    lightSources.get(0).update(playerPosition.x + 25, playerPosition.y, shapes, house.player.getSight(), lightsBuffGraphs);
-  
-    lightsGraphics.drawImage(lightsBuffer, 0, 0, null);
+//    lightSources.get(1).update(500, 500, shapes, 0, lightsGraphics);
+    lightSources.get(0).update(playerPosition.x + 25, playerPosition.y, shapes, house.player.getSight(), lightsGraphics);
   }
   
   
