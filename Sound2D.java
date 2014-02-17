@@ -1,6 +1,8 @@
 package application;
 
 import java.awt.Point;
+import java.awt.geom.Point2D;
+import java.awt.geom.Point2D.Double;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.File;
@@ -31,7 +33,6 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 public class Sound2D extends Application implements Runnable
 {
   private boolean sfx = true;
-  private boolean music = true;
 
   private static short[] zombieSample;
   private static AudioFormat zombieFormat;
@@ -56,16 +57,17 @@ public class Sound2D extends Application implements Runnable
 
   public void switchMenu()
   {
-    try
+    while (isReadyFX == false)
     {
-      menuSwitch.get();
-    } catch (NullPointerException e)
-    {
-      while (isReadyFX == false)
+      try
+      {
+        menuSwitch.get();
+      } catch (NullPointerException e)
       {
       }
     }
     menuSwitch.set(!menuSwitch.get());
+    System.out.println("Switched");
   }
 
   public void pauseMusic()
@@ -75,8 +77,14 @@ public class Sound2D extends Application implements Runnable
 
   public void playMusic()
   {
-    while(player==null);
+    while (player == null)
+      ;
     player.play();
+  }
+
+  public Sound2D(boolean notMainSound)
+  {
+
   }
 
   public Sound2D()
@@ -214,7 +222,7 @@ public class Sound2D extends Application implements Runnable
     return samples;
   }
 
-  public void playDistSound(Point source, Point player, int playerFace,
+  public void playDistSound(Point2D.Double source, Point2D.Double player, int playerFace,
       boolean isZombie)
   {
 
@@ -259,16 +267,15 @@ public class Sound2D extends Application implements Runnable
     Thread t = new Thread(man);
     t.start();
     System.out.println("launch");
-    man.playDistSound(new Point(1, 1), new Point(0, 0), 0, true);
-    man.playDistSound(new Point(0, 0), new Point(1, 1), 0, false);
+    man.playDistSound(new Point2D.Double(1, 1), new Point2D.Double(0, 0), 0, true);
+    man.playDistSound(new Point2D.Double(0, 0), new Point2D.Double(1, 1), 0, false);
     man.switchMenu();
   }
 
   @Override
   public void run()
   {
-    Sound2D test = new Sound2D();
-    test.launch();
+    Application.launch();
   }
 
   public void start(Stage primaryStage) throws IOException, URISyntaxException
@@ -276,15 +283,15 @@ public class Sound2D extends Application implements Runnable
     musicList = new ArrayList<>();
     File musicFile = new File("src/gameMusic");
     System.out.println("\"src/gameMusic\" exists?; " + musicFile.exists());
-    String file = "file:///" + musicFile.getAbsolutePath().replace('\\', '/');
-    System.out.println("Path is: " + file);
-    for (String i : musicFile.list())
+    String filePath = "file:///"
+        + musicFile.getAbsolutePath().replace('\\', '/');
+    System.out.println("Path is: " + filePath);
+    for (String fileName : musicFile.list())
     {
-      if (!i.endsWith(".mp3"))
-        continue;
-      musicList.add(new Media(file + "/" + i));
+      if (fileName.endsWith(".mp3"))
+        musicList.add(new Media(filePath + "/" + fileName));
     }
-    openScreen = new Media(file + "/menuMusic/EveningOfChaos.mp3");
+    openScreen = new Media(filePath + "/menuMusic/EveningOfChaos.mp3");
     menuSwitch = new SimpleBooleanProperty(true);
     listen = new ChangeListener<Boolean>()
     {
@@ -349,21 +356,22 @@ public class Sound2D extends Application implements Runnable
             player = gameBuilder.media(musicList.get(val)).build();
           }
         });
+    System.out.println("end of line");
     isReadyFX = true;
   }
 
   class DistSound implements Runnable
   {
-    private Point source;
-    private Point player;
+    private Point2D.Double source;
+    private Point2D.Double player;
     private byte faceDegree;
     private AudioFormat format;
     private short[] sample;
 
-    DistSound(Point source, Point player, int faceDegree, boolean isZombie)
+    DistSound(Point2D.Double source2, Point2D.Double player2, int faceDegree, boolean isZombie)
     {
-      this.source = source;
-      this.player = player;
+      this.source = source2;
+      this.player = player2;
       this.faceDegree = (byte) faceDegree;
       if (isZombie)
       {
@@ -383,41 +391,41 @@ public class Sound2D extends Application implements Runnable
       if (sfx)
       {
         // Player Direction
-        Point leftEar = new Point();
-        Point rightEar = new Point();
+        Double leftEar = new Point2D.Double();
+        Double rightEar = new Point2D.Double();
         switch (faceDegree)
         {
         case 1:// = north
-          leftEar.move(player.x - 1, player.y);
-          rightEar.move(player.x + 1, player.y);
+          leftEar.setLocation(player.x - 25, player.y);
+          rightEar.setLocation(player.x + 25, player.y);
           break;
         case 2:// = east
-          leftEar.move(player.x, player.y - 1);
-          rightEar.move(player.x, player.y + 1);
+          leftEar.setLocation(player.x, player.y - 25);
+          rightEar.setLocation(player.x, player.y + 25);
           break;
         case 3:// = south
-          leftEar.move(player.x + 1, player.y);
-          rightEar.move(player.x - 1, player.y);
+          leftEar.setLocation(player.x + 25, player.y);
+          rightEar.setLocation(player.x - 25, player.y);
           break;
         case 4:// = west
-          leftEar.move(player.x, player.y + 1);
-          rightEar.move(player.x, player.y - 1);
+          leftEar.setLocation(player.x, player.y + 25);
+          rightEar.setLocation(player.x, player.y - 25);
           break;
         case 5:// = northeast
-          leftEar.move(player.x - 1, player.y - 1);
-          rightEar.move(player.x + 1, player.y + 1);
+          leftEar.setLocation(player.x -  17, player.y -  17);
+          rightEar.setLocation(player.x +  17, player.y +  17);
           break;
         case 6:// = southeast
-          leftEar.move(player.x + 1, player.y - 1);
-          rightEar.move(player.x - 1, player.y + 1);
+          leftEar.setLocation(player.x +  17, player.y -  17);
+          rightEar.setLocation(player.x -  17, player.y +  17);
           break;
         case 7:// = southwest
-          leftEar.move(player.x + 1, player.y - 1);
-          rightEar.move(player.x - 1, player.y + 1);
+          leftEar.setLocation(player.x + 17, player.y -  17);
+          rightEar.setLocation(player.x - 17, player.y +  17);
           break;
         case 8:// = northwest
-          leftEar.move(player.x + 1, player.y + 1);
-          rightEar.move(player.x - 1, player.y - 1);
+          leftEar.setLocation(player.x + 17, player.y + 17);
+          rightEar.setLocation(player.x - 17, player.y - 17);
           break;
         }
         double distLeft = source.distance(leftEar);
